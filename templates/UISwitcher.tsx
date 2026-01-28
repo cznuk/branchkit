@@ -124,15 +124,23 @@ export const UISwitcher = <T extends Record<string, unknown>>({
   const [editingVersion, setEditingVersion] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState<string>("");
   const renameInputRef = useRef<HTMLInputElement>(null);
+  const editingVersionRef = useRef<string | null>(null);
   const previousVersionKeysRef = useRef<Set<string>>(new Set());
   const versionsRef = useRef(versions);
   const idRef = useRef(id);
+  const activeVersionRef = useRef(activeVersion);
+
+  // Keep editingVersion ref updated
+  useEffect(() => {
+    editingVersionRef.current = editingVersion;
+  }, [editingVersion]);
 
   // Keep refs updated
   useEffect(() => {
     versionsRef.current = versions;
     idRef.current = id;
-  }, [versions, id]);
+    activeVersionRef.current = activeVersion;
+  }, [versions, id, activeVersion]);
 
   // Initialize previous version keys and check for pending versions on mount
   useEffect(() => {
@@ -233,6 +241,8 @@ export const UISwitcher = <T extends Record<string, unknown>>({
 
           // Determine which version to activate based on the operation type
           let versionToActivate: string | null = null;
+          const oldVersion = data.payload.version;
+          const newVersion = data.payload.newVersion;
 
           if (message.includes("duplicated")) {
             // For duplicate: activate the new target version
@@ -240,9 +250,17 @@ export const UISwitcher = <T extends Record<string, unknown>>({
           } else if (message.includes("created new version")) {
             // For new version: activate the newly created version
             versionToActivate = data.payload.version;
-          } else if (message.includes("renamed") && data.payload.newVersion) {
+          } else if (message.includes("renamed") && newVersion) {
             // For rename: activate the new version name
-            versionToActivate = data.payload.newVersion;
+            versionToActivate = newVersion;
+
+            // Check if the renamed version was the active one
+            if (activeVersionRef.current === oldVersion) {
+              // The renamed version was active, so we definitely need to switch to the new version
+              console.log(
+                `[UISwitcher] Active version ${oldVersion} was renamed to ${newVersion}, switching...`,
+              );
+            }
           }
           // For delete operations, we don't activate anything
 
@@ -266,6 +284,16 @@ export const UISwitcher = <T extends Record<string, unknown>>({
               );
             }
           }
+        } else if (data.type === "error") {
+          // Handle error messages from server
+          const errorMessage = data.payload?.message || "Unknown error";
+          console.error("[UISwitcher] Server error:", errorMessage);
+
+          // If we're in rename mode and got an error, cancel the rename
+          if (editingVersionRef.current) {
+            setEditingVersion(null);
+            setRenameValue("");
+          }
         }
       } catch (error) {
         console.error("[UISwitcher] Error parsing WebSocket message:", error);
@@ -277,7 +305,7 @@ export const UISwitcher = <T extends Record<string, unknown>>({
         ws.close();
       }
     };
-  }, [setActiveVersion]);
+  }, [setActiveVersion, setEditingVersion, setRenameValue]);
 
   // Send WebSocket message helper
   const sendWebSocketMessage = useCallback(
@@ -311,31 +339,90 @@ export const UISwitcher = <T extends Record<string, unknown>>({
     sendWebSocketMessage("delete_version", { version });
   };
 
+  // Helper function to normalize version key input
+  const normalizeVersionKey = (input: string): string | null => {
+    if (!input || typeof input !== "string") return null;
+
+    // Remove any leading/trailing whitespace and convert to lowercase
+    let normalized = input.trim().toLowerCase();
+
+    if (!normalized) return null;
+
+    // Remove any 'v' prefix if present, then add lowercase 'v'
+    // This ensures we always have lowercase 'v'
+    normalized = normalized.replace(/^v+/i, ""); // Remove any v/V prefix
+
+    // Convert dots to underscores (e.g., "2.2" -> "2_2")
+    // This allows users to input v2.2 format which is more intuitive
+    normalized = normalized.replace(/\./g, "_");
+
+    normalized = "v" + normalized; // Add lowercase v prefix
+
+    // Validate format: v{number}[_{number}]
+    const versionKeyPattern = /^v\d+(_\d+)?$/;
+    if (!versionKeyPattern.test(normalized)) {
+      return null;
+    }
+
+    return normalized;
+  };
+
   const handleRenameVersion = (version: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingVersion(version);
-    setRenameValue(versions[version].label);
+    // Show the version key (e.g., "v1") instead of the label for editing
+    setRenameValue(version);
   };
 
   const handleConfirmRename = useCallback(
     (version: string) => {
-      if (!renameValue.trim() || renameValue === versions[version].label) {
-        // Cancel if empty or unchanged
+      const trimmedValue = renameValue.trim();
+
+      // Normalize the input to a valid version key format
+      const normalizedVersion = normalizeVersionKey(trimmedValue);
+
+      if (!normalizedVersion) {
+        // Invalid format - could show an error message here
+        console.error(
+          "[UISwitcher] Invalid version format. Expected format: v1, v2, v2.2, v1_2, etc.",
+        );
+        setEditingVersion(null);
+        setRenameValue("");
+        return;
+      }
+
+      if (normalizedVersion === version) {
+        // No change - cancel
+        setEditingVersion(null);
+        setRenameValue("");
+        return;
+      }
+
+      // Check if the new version key already exists
+      if (versionKeys.includes(normalizedVersion)) {
+        console.error(
+          `[UISwitcher] Version ${normalizedVersion} already exists`,
+        );
         setEditingVersion(null);
         setRenameValue("");
         return;
       }
 
       // Send rename message via WebSocket
+      // Ensure we're sending a normalized version key (lowercase 'v')
+      console.log(
+        `[UISwitcher] Renaming ${version} to ${normalizedVersion} (normalized from "${trimmedValue}")`,
+      );
+
       sendWebSocketMessage("rename_version", {
         version,
-        newVersion: renameValue.trim(),
+        newVersion: normalizedVersion,
       });
 
       setEditingVersion(null);
       setRenameValue("");
     },
-    [renameValue, versions, sendWebSocketMessage],
+    [renameValue, versions, versionKeys, sendWebSocketMessage],
   );
 
   const handleCancelRename = useCallback(() => {
@@ -620,7 +707,7 @@ export const UISwitcher = <T extends Record<string, unknown>>({
                           }}
                           onClick={(e) => e.stopPropagation()}
                           className="flex-1 rounded bg-neutral-700 px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-neutral-500"
-                          placeholder="Version name"
+                          placeholder="e.g., v1, v2, v1_2"
                         />
                         {/* Check button */}
                         <button
