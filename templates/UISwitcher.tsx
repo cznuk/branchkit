@@ -121,12 +121,73 @@ export const UISwitcher = <T extends Record<string, unknown>>({
   const [connectionStatus, setConnectionStatus] = useState<
     "connected" | "disconnected" | "connecting"
   >("disconnected");
+  const previousVersionKeysRef = useRef<Set<string>>(new Set());
+  const versionsRef = useRef(versions);
+  const idRef = useRef(id);
+
+  // Keep refs updated
+  useEffect(() => {
+    versionsRef.current = versions;
+    idRef.current = id;
+  }, [versions, id]);
+
+  // Initialize previous version keys and check for pending versions on mount
+  useEffect(() => {
+    previousVersionKeysRef.current = new Set(versionKeys);
+
+    // Check if there's a pending version from before hot reload
+    const pendingVersionKey = `${id}-pending-version`;
+    try {
+      const pendingVersion = localStorage.getItem(pendingVersionKey);
+      if (pendingVersion && versionKeys.includes(pendingVersion)) {
+        setActiveVersion(pendingVersion);
+        localStorage.removeItem(pendingVersionKey);
+      }
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+  }, []); // Only run on mount
 
   useEffect(() => {
     if (!versionKeys.includes(activeVersion)) {
       setActiveVersion(versionKeys[0]);
     }
   }, [activeVersion, versionKeys, setActiveVersion]);
+
+  // Activate newly created/cloned version when it becomes available
+  useEffect(() => {
+    const currentVersionSet = new Set(versionKeys);
+    const previousVersionSet = previousVersionKeysRef.current;
+
+    // Find newly added versions
+    const newVersions = versionKeys.filter(
+      (key) => !previousVersionSet.has(key),
+    );
+
+    // If there's a new version and it's not already active, activate it
+    if (newVersions.length > 0) {
+      // Check localStorage for a pending version that should be activated
+      const pendingVersionKey = `${id}-pending-version`;
+      try {
+        const pendingVersion = localStorage.getItem(pendingVersionKey);
+        if (pendingVersion && versionKeys.includes(pendingVersion)) {
+          setActiveVersion(pendingVersion);
+          localStorage.removeItem(pendingVersionKey);
+        } else if (newVersions.length === 1) {
+          // If only one new version was added, activate it
+          setActiveVersion(newVersions[0]);
+        }
+      } catch (error) {
+        // If localStorage fails, just activate the first new version
+        if (newVersions.length > 0) {
+          setActiveVersion(newVersions[0]);
+        }
+      }
+    }
+
+    // Update the previous version keys set
+    previousVersionKeysRef.current = currentVersionSet;
+  }, [versionKeys, id, setActiveVersion]);
 
   // WebSocket connection management
   useEffect(() => {
@@ -160,16 +221,47 @@ export const UISwitcher = <T extends Record<string, unknown>>({
         const data = JSON.parse(event.data);
         // Handle server messages (ack, error, file_changed)
         if (data.type === "file_changed") {
-          // File system changed, could trigger a refresh if needed
+          // File system changed - versions file was regenerated
+          // The effect hook will detect new versions and activate them
           console.log("[UISwitcher] File changed:", data.payload);
         } else if (data.type === "ack" && data.payload?.version) {
-          // When a new version is created or duplicated, switch to it
-          const newVersion = data.payload.version;
-          if (
-            data.payload.message?.includes("duplicated") ||
-            data.payload.message?.includes("created new version")
-          ) {
-            setActiveVersion(newVersion);
+          // When a new version is created, duplicated, or renamed, switch to it
+          const message = data.payload.message || "";
+
+          // Determine which version to activate based on the operation type
+          let versionToActivate: string | null = null;
+
+          if (message.includes("duplicated")) {
+            // For duplicate: activate the new target version
+            versionToActivate = data.payload.version;
+          } else if (message.includes("created new version")) {
+            // For new version: activate the newly created version
+            versionToActivate = data.payload.version;
+          } else if (message.includes("renamed") && data.payload.newVersion) {
+            // For rename: activate the new version name
+            versionToActivate = data.payload.newVersion;
+          }
+          // For delete operations, we don't activate anything
+
+          if (versionToActivate) {
+            // Store in localStorage so it survives hot reloads
+            // The effect hook will check this when versionKeys updates
+            const pendingVersionKey = `${idRef.current}-pending-version`;
+            try {
+              localStorage.setItem(pendingVersionKey, versionToActivate);
+              // Also try to activate immediately if the version is already available
+              // (in case the versions prop updates before file_changed)
+              const currentVersionKeys = Object.keys(versionsRef.current);
+              if (currentVersionKeys.includes(versionToActivate)) {
+                setActiveVersion(versionToActivate);
+                localStorage.removeItem(pendingVersionKey);
+              }
+            } catch (error) {
+              console.error(
+                "[UISwitcher] Error storing pending version:",
+                error,
+              );
+            }
           }
         }
       } catch (error) {
