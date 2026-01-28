@@ -5,9 +5,82 @@ import {
   offset,
   shift,
 } from "@floating-ui/dom";
-import { useLocalStorage } from "hooks/useLocalStorage";
-import React, { type ReactNode, useEffect, useRef, useState } from "react";
+import React, {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
+
+// Simple useLocalStorage hook
+function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+  syncAcrossTabs = false,
+): [T, (value: T | ((val: T) => T)) => void] {
+  const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === "undefined") {
+      return initialValue;
+    }
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error(`Error reading localStorage key "${key}":`, error);
+      return initialValue;
+    }
+  });
+
+  const setValue = useCallback(
+    (value: T | ((val: T) => T)) => {
+      try {
+        setStoredValue((currentValue) => {
+          const valueToStore =
+            value instanceof Function ? value(currentValue) : value;
+          if (typeof window !== "undefined") {
+            window.localStorage.setItem(key, JSON.stringify(valueToStore));
+            if (syncAcrossTabs) {
+              window.dispatchEvent(
+                new StorageEvent("storage", {
+                  key,
+                  newValue: JSON.stringify(valueToStore),
+                }),
+              );
+            }
+          }
+          return valueToStore;
+        });
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
+      }
+    },
+    [key, syncAcrossTabs],
+  );
+
+  useEffect(() => {
+    if (!syncAcrossTabs) return;
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key && e.newValue) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error(
+            `Error parsing localStorage value for "${key}":`,
+            error,
+          );
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [key, syncAcrossTabs]);
+
+  return [storedValue, setValue];
+}
 
 type VersionType<T extends Record<string, unknown>> = {
   render: (props: T) => ReactNode;
@@ -89,6 +162,15 @@ export const UISwitcher = <T extends Record<string, unknown>>({
         if (data.type === "file_changed") {
           // File system changed, could trigger a refresh if needed
           console.log("[UISwitcher] File changed:", data.payload);
+        } else if (data.type === "ack" && data.payload?.version) {
+          // When a new version is created or duplicated, switch to it
+          const newVersion = data.payload.version;
+          if (
+            data.payload.message?.includes("duplicated") ||
+            data.payload.message?.includes("created new version")
+          ) {
+            setActiveVersion(newVersion);
+          }
         }
       } catch (error) {
         console.error("[UISwitcher] Error parsing WebSocket message:", error);
@@ -100,7 +182,7 @@ export const UISwitcher = <T extends Record<string, unknown>>({
         ws.close();
       }
     };
-  }, []);
+  }, [setActiveVersion]);
 
   // Send WebSocket message helper
   const sendWebSocketMessage = (
