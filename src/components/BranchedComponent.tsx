@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import {
   registerComponent,
@@ -43,9 +43,37 @@ export function BranchedComponent<T extends Record<string, unknown>>({
     }
   }, [activeVersion, versionKeys, setActiveVersion]);
 
-  // Get the version to render
-  const Version =
+  // Get the version loader
+  const versionLoader =
     versions[activeVersion]?.render ?? versions[versionKeys[0]].render;
 
-  return <Version {...props} />;
+  // Handle both static and dynamic imports
+  const [LazyVersion, setLazyVersion] = useState<any>(null);
+
+  useEffect(() => {
+    // Check if it's a dynamic import (function) or static import (component)
+    if (typeof versionLoader === "function") {
+      // Dynamic import - create lazy component
+      const component = lazy(versionLoader as any);
+      setLazyVersion(() => component);
+    } else {
+      // Static import - use directly
+      setLazyVersion(() => versionLoader);
+    }
+  }, [versionLoader]);
+
+  if (!LazyVersion) {
+    return null;
+  }
+
+  // Wrap dynamic imports with Suspense
+  if (typeof versionLoader === "function") {
+    return (
+      <Suspense fallback={null}>
+        <LazyVersion {...props} />
+      </Suspense>
+    );
+  }
+
+  return <LazyVersion {...props} />;
 }

@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 export type VersionType<
   T extends Record<string, unknown> = Record<string, unknown>,
 > = {
-  render: (props: T) => ReactNode;
+  render: ComponentType<T> | (() => Promise<{ default: ComponentType<T> }>);
   description?: string;
   label: string;
 };
