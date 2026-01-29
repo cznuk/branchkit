@@ -28,14 +28,27 @@ export function useLocalStorage<T>(
           const valueToStore =
             value instanceof Function ? value(currentValue) : value;
           if (typeof window !== "undefined") {
-            window.localStorage.setItem(key, JSON.stringify(valueToStore));
-            if (syncAcrossTabs) {
-              window.dispatchEvent(
-                new StorageEvent("storage", {
-                  key,
-                  newValue: JSON.stringify(valueToStore),
-                }),
-              );
+            // Remove the key if value is empty string (for string types)
+            if (valueToStore === "" && typeof initialValue === "string") {
+              window.localStorage.removeItem(key);
+              if (syncAcrossTabs) {
+                window.dispatchEvent(
+                  new StorageEvent("storage", {
+                    key,
+                    newValue: null,
+                  }),
+                );
+              }
+            } else {
+              window.localStorage.setItem(key, JSON.stringify(valueToStore));
+              if (syncAcrossTabs) {
+                window.dispatchEvent(
+                  new StorageEvent("storage", {
+                    key,
+                    newValue: JSON.stringify(valueToStore),
+                  }),
+                );
+              }
             }
           }
           return valueToStore;
@@ -44,7 +57,7 @@ export function useLocalStorage<T>(
         console.error(`Error setting localStorage key "${key}":`, error);
       }
     },
-    [key, syncAcrossTabs],
+    [key, syncAcrossTabs, initialValue],
   );
 
   useEffect(() => {

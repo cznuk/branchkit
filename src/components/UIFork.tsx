@@ -71,6 +71,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const componentSelectorRef = useRef<HTMLDivElement>(null);
+  const selectedComponentRef = useRef<string>("");
 
   // Component discovery hook
   const {
@@ -79,6 +80,11 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     setSelectedComponent,
     fetchComponents,
   } = useComponentDiscovery({ port });
+
+  // Keep ref updated with current selected component
+  useEffect(() => {
+    selectedComponentRef.current = selectedComponent;
+  }, [selectedComponent]);
 
   // Get current component's versions
   const currentComponent = mountedComponents.find(
@@ -123,10 +129,46 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       }
     },
     onPromoted: (promotedComponent) => {
-      fetchComponents();
-      if (selectedComponent === promotedComponent) {
+      // Always check localStorage directly and remove if it matches the promoted component
+      // This handles cases where state might be stale but localStorage has the value
+      const storedValue = localStorage.getItem("uifork-selected-component");
+      const storedComponent = storedValue ? JSON.parse(storedValue) : null;
+      const currentSelected = selectedComponentRef.current;
+
+      // Remove if either state or localStorage matches the promoted component
+      if (
+        currentSelected === promotedComponent ||
+        storedComponent === promotedComponent
+      ) {
+        // Directly remove from localStorage immediately
+        localStorage.removeItem("uifork-selected-component");
+        // Clear state (hook should also handle removal, but we've already done it)
         setSelectedComponent("");
+        // Aggressively ensure removal persists - check and remove multiple times
+        const ensureRemoval = () => {
+          const stored = localStorage.getItem("uifork-selected-component");
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored);
+              if (parsed === promotedComponent) {
+                localStorage.removeItem("uifork-selected-component");
+              }
+            } catch {
+              // If not JSON, check as plain string
+              if (stored === promotedComponent) {
+                localStorage.removeItem("uifork-selected-component");
+              }
+            }
+          }
+        };
+        // Check immediately and after delays to handle any race conditions
+        ensureRemoval();
+        setTimeout(ensureRemoval, 0);
+        setTimeout(ensureRemoval, 50);
+        setTimeout(ensureRemoval, 100);
       }
+      // Fetch components after clearing (this might auto-select another component)
+      fetchComponents();
     },
     onError: clearEditingOnError,
   });
