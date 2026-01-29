@@ -11,7 +11,7 @@ interface ComponentSelectorProps {
 }
 
 const ANIMATION_DURATION = 0.3;
-const ANIMATION_EASING = [0.18, 0.83, 0, 1] as const;
+const ANIMATION_EASING = [0.04, 1.02, 0.13, 1.02] as const;
 
 export function ComponentSelector({
   selectedComponent,
@@ -28,8 +28,10 @@ export function ComponentSelector({
         layout="position"
         className={styles.componentSelectorLabel}
         transition={{
-          duration: ANIMATION_DURATION,
-          ease: ANIMATION_EASING,
+          layout: {
+            duration: ANIMATION_DURATION,
+            ease: ANIMATION_EASING,
+          },
         }}
       >
         {selectedComponent || "Select component"}
