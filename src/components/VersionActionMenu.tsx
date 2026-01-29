@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import styles from "./UIFork.module.css";
 import { PromoteIcon } from "./icons/PromoteIcon";
 import { OpenInEditorIcon } from "./icons/OpenInEditorIcon";
@@ -29,7 +30,8 @@ export function VersionActionMenu({
   // Don't set position via props - the positioning effect handles it directly
   // This prevents the popover from flashing at (0, 0) on initial render
   // The CSS animation will handle the fade-in and scale effect
-  return (
+  // Render in a portal to escape the scroll container and allow overflow
+  return createPortal(
     <div
       ref={setDropdownRef}
       className={styles.popover}
@@ -80,6 +82,7 @@ export function VersionActionMenu({
         <RenameIcon className={styles.popoverMenuItemIcon} />
         <span>Rename</span>
       </button>
-    </div>
+    </div>,
+    document.body,
   );
 }
