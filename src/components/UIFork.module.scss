@@ -84,6 +84,13 @@ $z-popover: 1002;
   &:hover {
     background-color: $bg-hover;
   }
+
+  &.triggerEmpty {
+    padding: $spacing-xs;
+    width: 32px;
+    height: 32px;
+    justify-content: center;
+  }
 }
 
 /* Connection status indicator */
@@ -193,6 +200,67 @@ $z-popover: 1002;
   padding: $spacing-sm $spacing-md;
   font-size: 14px;
   color: $text-muted;
+}
+
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-md;
+  gap: $spacing-sm;
+  text-align: center;
+}
+
+.emptyStateHeading {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-primary;
+  margin: 0;
+}
+
+.emptyStateText {
+  font-size: 13px;
+  color: $text-secondary;
+  margin: 0;
+  line-height: 1.4;
+  max-width: 200px;
+}
+
+.emptyStateCommandContainer {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  background-color: $bg-input;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $radius-sm;
+  margin-top: $spacing-xs;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+
+  &:hover {
+    background-color: $bg-hover;
+  }
+}
+
+.emptyStateCommand {
+  font-size: 13px;
+  color: $text-primary;
+  margin: 0;
+  font-family: monospace;
+}
+
+.emptyStateCopyIcon {
+  width: 14px;
+  height: 14px;
+  color: $text-secondary;
+  flex-shrink: 0;
+  transition: color 0.15s;
+
+  .emptyStateCommandContainer:hover & {
+    color: $text-primary;
+  }
 }
 
 /* Version item */

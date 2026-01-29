@@ -12,6 +12,8 @@ import type { UIForkProps } from "../types";
 import styles from "./UIFork.module.css";
 import { PlusIcon } from "./icons/PlusIcon";
 import { BranchIcon } from "./icons/BranchIcon";
+import { CopyIcon } from "./icons/CopyIcon";
+import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import {
   ComponentSelector,
   ComponentSelectorDropdown,
@@ -65,6 +67,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     x: 0,
     y: 0,
   });
+  const [copied, setCopied] = useState(false);
 
   // Refs
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -361,6 +364,18 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     return version.replace(/^v/, "V").replace(/_/g, ".");
   };
 
+  // Copy command to clipboard
+  const handleCopyCommand = useCallback(async () => {
+    const command = "uifork init ";
+    try {
+      await navigator.clipboard.writeText(command);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy command:", error);
+    }
+  }, []);
+
   // Don't render until mounted on client (prevents hydration mismatch)
   if (!isMounted) {
     return null;
@@ -393,7 +408,9 @@ export function UIFork({ port = 3001 }: UIForkProps) {
               aria-label="Select UI version"
               aria-expanded={false}
               aria-haspopup="listbox"
-              className={styles.trigger}
+              className={`${styles.trigger} ${
+                mountedComponents.length === 0 ? styles.triggerEmpty : ""
+              }`}
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -403,37 +420,43 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                 ease: ANIMATION_EASING,
               }}
             >
-              <div
-                className={`${styles.statusIndicator} ${
-                  connectionStatus === "connected"
-                    ? styles.statusIndicatorConnected
-                    : connectionStatus === "connecting"
-                      ? styles.statusIndicatorConnecting
-                      : styles.statusIndicatorDisconnected
-                }`}
-                title={
-                  connectionStatus === "connected"
-                    ? "Connected to watch server"
-                    : connectionStatus === "connecting"
-                      ? "Connecting..."
-                      : "Disconnected from watch server"
-                }
-              />
-              <BranchIcon className={styles.triggerIcon} />
-              <motion.span
-                layoutId="component-name"
-                layout="position"
-                className={styles.triggerLabel}
-                transition={{
-                  duration: ANIMATION_DURATION,
-                  ease: ANIMATION_EASING,
-                }}
-              >
-                {selectedComponent || "No component"}
-              </motion.span>
-              <span className={styles.triggerVersion}>
-                {activeVersion ? formatVersionLabel(activeVersion) : "-"}
-              </span>
+              {mountedComponents.length === 0 ? (
+                <BranchIcon className={styles.triggerIcon} />
+              ) : (
+                <>
+                  <div
+                    className={`${styles.statusIndicator} ${
+                      connectionStatus === "connected"
+                        ? styles.statusIndicatorConnected
+                        : connectionStatus === "connecting"
+                          ? styles.statusIndicatorConnecting
+                          : styles.statusIndicatorDisconnected
+                    }`}
+                    title={
+                      connectionStatus === "connected"
+                        ? "Connected to watch server"
+                        : connectionStatus === "connecting"
+                          ? "Connecting..."
+                          : "Disconnected from watch server"
+                    }
+                  />
+                  <BranchIcon className={styles.triggerIcon} />
+                  <motion.span
+                    layoutId="component-name"
+                    layout="position"
+                    className={styles.triggerLabel}
+                    transition={{
+                      duration: ANIMATION_DURATION,
+                      ease: ANIMATION_EASING,
+                    }}
+                  >
+                    {selectedComponent || "No component"}
+                  </motion.span>
+                  <span className={styles.triggerVersion}>
+                    {activeVersion ? formatVersionLabel(activeVersion) : "-"}
+                  </span>
+                </>
+              )}
             </motion.button>
           ) : (
             <motion.div
@@ -451,61 +474,90 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                 ease: ANIMATION_EASING,
               }}
             >
-              {/* Component selector */}
-              <ComponentSelector
-                selectedComponent={selectedComponent}
-                onToggle={() =>
-                  setIsComponentSelectorOpen(!isComponentSelectorOpen)
-                }
-              />
-
-              <div className={styles.divider} />
-
-              {/* Versions list */}
-              <VersionsList
-                versionKeys={versionKeys}
-                activeVersion={activeVersion}
-                editingVersion={editingVersion}
-                renameValue={renameValue}
-                formatVersionLabel={formatVersionLabel}
-                openPopoverVersion={openPopoverVersion}
-                popoverPositions={popoverPositions}
-                onSelectVersion={(version) => {
-                  setActiveVersion(version);
-                  setIsOpen(false);
-                  setOpenPopoverVersion(null);
-                  triggerRef.current?.focus();
-                }}
-                onDuplicateVersion={handleDuplicateVersion}
-                onTogglePopover={handleTogglePopover}
-                onPromoteVersion={handlePromoteVersion}
-                onOpenInEditor={handleOpenInEditor}
-                onDeleteVersion={handleDeleteVersion}
-                onRenameVersion={handleRenameVersion}
-                onRenameValueChange={setRenameValue}
-                onConfirmRename={handleConfirmRename}
-                onCancelRename={cancelRename}
-                setPopoverTriggerRef={setPopoverTriggerRef}
-                setPopoverDropdownRef={setPopoverDropdownRef}
-              />
-
-              <div className={styles.divider} />
-
-              {/* New version button */}
-              <button
-                onClick={(e) => {
-                  handleNewVersion(e);
-                  setIsOpen(false);
-                  triggerRef.current?.focus();
-                }}
-                className={styles.newVersionButton}
-                title="Create new version"
-              >
-                <div className={styles.newVersionIconContainer}>
-                  <PlusIcon className={styles.newVersionIcon} />
+              {mountedComponents.length === 0 ? (
+                <div className={styles.emptyStateContainer}>
+                  <h3 className={styles.emptyStateHeading}>
+                    Get started with uifork
+                  </h3>
+                  <p className={styles.emptyStateText}>
+                    Choose a component and run the command in your root
+                    directory
+                  </p>
+                  <button
+                    onClick={handleCopyCommand}
+                    className={styles.emptyStateCommandContainer}
+                    title="Copy command"
+                    aria-label="Copy command to clipboard"
+                  >
+                    <code className={styles.emptyStateCommand}>
+                      uifork init &lt;path to file&gt;
+                    </code>
+                    {copied ? (
+                      <CheckmarkIcon className={styles.emptyStateCopyIcon} />
+                    ) : (
+                      <CopyIcon className={styles.emptyStateCopyIcon} />
+                    )}
+                  </button>
                 </div>
-                <span>New version</span>
-              </button>
+              ) : (
+                <>
+                  {/* Component selector */}
+                  <ComponentSelector
+                    selectedComponent={selectedComponent}
+                    onToggle={() =>
+                      setIsComponentSelectorOpen(!isComponentSelectorOpen)
+                    }
+                  />
+
+                  <div className={styles.divider} />
+
+                  {/* Versions list */}
+                  <VersionsList
+                    versionKeys={versionKeys}
+                    activeVersion={activeVersion}
+                    editingVersion={editingVersion}
+                    renameValue={renameValue}
+                    formatVersionLabel={formatVersionLabel}
+                    openPopoverVersion={openPopoverVersion}
+                    popoverPositions={popoverPositions}
+                    onSelectVersion={(version) => {
+                      setActiveVersion(version);
+                      setIsOpen(false);
+                      setOpenPopoverVersion(null);
+                      triggerRef.current?.focus();
+                    }}
+                    onDuplicateVersion={handleDuplicateVersion}
+                    onTogglePopover={handleTogglePopover}
+                    onPromoteVersion={handlePromoteVersion}
+                    onOpenInEditor={handleOpenInEditor}
+                    onDeleteVersion={handleDeleteVersion}
+                    onRenameVersion={handleRenameVersion}
+                    onRenameValueChange={setRenameValue}
+                    onConfirmRename={handleConfirmRename}
+                    onCancelRename={cancelRename}
+                    setPopoverTriggerRef={setPopoverTriggerRef}
+                    setPopoverDropdownRef={setPopoverDropdownRef}
+                  />
+
+                  <div className={styles.divider} />
+
+                  {/* New version button */}
+                  <button
+                    onClick={(e) => {
+                      handleNewVersion(e);
+                      setIsOpen(false);
+                      triggerRef.current?.focus();
+                    }}
+                    className={styles.newVersionButton}
+                    title="Create new version"
+                  >
+                    <div className={styles.newVersionIconContainer}>
+                      <PlusIcon className={styles.newVersionIcon} />
+                    </div>
+                    <span>New version</span>
+                  </button>
+                </>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
