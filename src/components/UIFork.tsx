@@ -115,6 +115,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     selectedComponent,
     onFileChanged: fetchComponents,
     onVersionAck: ({ version, message, newVersion }) => {
+      console.log("[UIFork] onVersionAck:", { version, message, newVersion });
       let versionToActivate: string | null = null;
 
       if (
@@ -127,6 +128,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       }
 
       if (versionToActivate) {
+        console.log("[UIFork] Activating version:", versionToActivate);
         storePendingVersion(versionToActivate);
         fetchComponents();
       }

@@ -26,52 +26,59 @@ export function useVersionManagement({
     editingVersionRef.current = editingVersion;
   }, [editingVersion]);
 
-  // Update active version when component changes or versions update
-  useEffect(() => {
-    if (selectedComponent && versionKeys.length > 0) {
-      // Try to read saved version from localStorage
-      const savedVersion = localStorage.getItem(selectedComponent);
-      const parsedVersion = savedVersion ? JSON.parse(savedVersion) : null;
-
-      if (parsedVersion && versionKeys.includes(parsedVersion)) {
-        setActiveVersion(parsedVersion);
-      } else if (!versionKeys.includes(activeVersion)) {
-        // Fall back to first version
-        setActiveVersion(versionKeys[0]);
-      }
-    }
-  }, [selectedComponent, versionKeys, activeVersion, setActiveVersion]);
-
-  // Write active version to localStorage with component ID as key
-  useEffect(() => {
-    if (selectedComponent && activeVersion) {
-      localStorage.setItem(selectedComponent, JSON.stringify(activeVersion));
-      // Dispatch storage event for cross-tab sync
-      window.dispatchEvent(
-        new StorageEvent("storage", {
-          key: selectedComponent,
-          newValue: JSON.stringify(activeVersion),
-        }),
-      );
-    }
-  }, [selectedComponent, activeVersion]);
-
-  // Check for pending version after components refresh
+  // Consolidated effect for initialization and pending version check
   useEffect(() => {
     if (selectedComponent && versionKeys.length > 0) {
       const pendingKey = `${selectedComponent}-pending-version`;
       const pendingVersion = localStorage.getItem(pendingKey);
+
+      console.log("[useVersionManagement] Version check:", {
+        selectedComponent,
+        versionKeys,
+        activeVersion,
+        pendingVersion,
+      });
+
       if (pendingVersion && versionKeys.includes(pendingVersion)) {
+        console.log(
+          "[useVersionManagement] Applying pending version:",
+          pendingVersion,
+        );
         setActiveVersion(pendingVersion);
         localStorage.removeItem(pendingKey);
+      } else {
+        // If no pending version, validate current active version
+        // If activeVersion is not in keys, try to restore from LS or default
+        if (!versionKeys.includes(activeVersion)) {
+          const savedVersion = localStorage.getItem(selectedComponent);
+          const parsedVersion = savedVersion ? JSON.parse(savedVersion) : null;
+
+          if (parsedVersion && versionKeys.includes(parsedVersion)) {
+            console.log(
+              "[useVersionManagement] Restoring saved version:",
+              parsedVersion,
+            );
+            setActiveVersion(parsedVersion);
+          } else {
+            console.log(
+              "[useVersionManagement] Fallback to default:",
+              versionKeys[0],
+            );
+            setActiveVersion(versionKeys[0]);
+          }
+        }
       }
     }
-  }, [selectedComponent, versionKeys, setActiveVersion]);
+  }, [selectedComponent, versionKeys, activeVersion, setActiveVersion]);
 
   // Store pending version (called after version operations)
   const storePendingVersion = useCallback(
     (version: string) => {
       const pendingKey = `${selectedComponent}-pending-version`;
+      console.log("[useVersionManagement] Storing pending version:", {
+        pendingKey,
+        version,
+      });
       localStorage.setItem(pendingKey, version);
     },
     [selectedComponent],

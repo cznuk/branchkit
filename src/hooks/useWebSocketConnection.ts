@@ -78,6 +78,7 @@ export function useWebSocketConnection({
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+        console.log("[WebSocket] Received:", data);
 
         if (data.type === "file_changed") {
           onFileChangedRef.current?.();

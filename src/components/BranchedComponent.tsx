@@ -36,16 +36,42 @@ export function BranchedComponent<T extends Record<string, unknown>>({
     };
   }, [id]);
 
+  const [lastValidVersion, setLastValidVersion] = useState<string>(
+    versionKeys.includes(activeVersion) ? activeVersion : initialVersion,
+  );
+
+  // Update last valid version when active version is found in versions
+  useEffect(() => {
+    if (versions[activeVersion]) {
+      setLastValidVersion(activeVersion);
+    }
+  }, [activeVersion, versions]);
+
   // If active version no longer exists in versions, fall back to first version
   useEffect(() => {
-    if (!versionKeys.includes(activeVersion)) {
-      setActiveVersion(versionKeys[0]);
+    if (versionKeys.length > 0 && !versionKeys.includes(activeVersion)) {
+      // Debounce the fallback to prevent race conditions during HMR/updates
+      // where the version in localStorage might be newer than the props received.
+      // 2500ms allows for slow HMR updates without reverting state
+      const timer = setTimeout(() => {
+        // Double check after delay
+        if (!versionKeys.includes(activeVersion)) {
+          console.log(
+            "[BranchedComponent] Active version not found in keys, reverting to:",
+            versionKeys[0],
+          );
+          setActiveVersion(versionKeys[0]);
+        }
+      }, 2500);
+      return () => clearTimeout(timer);
     }
   }, [activeVersion, versionKeys, setActiveVersion]);
 
-  // Get the version loader
+  // Get the version loader - prefer active, then last valid, then default
   const versionLoader =
-    versions[activeVersion]?.render ?? versions[versionKeys[0]].render;
+    versions[activeVersion]?.render ??
+    versions[lastValidVersion]?.render ??
+    versions[versionKeys[0]].render;
 
   // Handle both static and dynamic imports
   const [LazyVersion, setLazyVersion] = useState<any>(null);
