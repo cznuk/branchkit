@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-export type ConnectionStatus = "connected" | "disconnected" | "connecting" | "failed";
+export type ConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "connecting"
+  | "failed";
 
 export type WebSocketMessageType =
   | "duplicate_version"
@@ -13,11 +17,13 @@ interface UseWebSocketConnectionOptions {
   port: number;
   selectedComponent: string;
   onFileChanged?: () => void;
-  onComponentsUpdate?: (components: Array<{
-    name: string;
-    path: string;
-    versions: string[];
-  }>) => void;
+  onComponentsUpdate?: (
+    components: Array<{
+      name: string;
+      path: string;
+      versions: string[];
+    }>,
+  ) => void;
   onVersionAck?: (payload: {
     version: string;
     message?: string;
@@ -47,10 +53,14 @@ export function useWebSocketConnection({
   const onVersionAckRef = useRef(onVersionAck);
   const onPromotedRef = useRef(onPromoted);
   const onErrorRef = useRef(onError);
-  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const isConnectingRef = useRef(false);
   const wsConnectionRef = useRef<WebSocket | null>(null);
   const shouldReconnectRef = useRef(true);
+  const hasEverConnectedRef = useRef(false);
+  const retryCountRef = useRef(0);
 
   // Keep wsConnectionRef in sync with state
   useEffect(() => {
@@ -81,13 +91,21 @@ export function useWebSocketConnection({
 
     const wsUrl = `ws://localhost:${port}/ws`;
     isConnectingRef.current = true;
-    setConnectionStatus("connecting");
+    
+    // Only show "connecting" status on first attempt or if we've successfully connected before
+    // This prevents animation flashes during retry loops
+    if (retryCountRef.current === 0 || hasEverConnectedRef.current) {
+      setConnectionStatus("connecting");
+    }
+    retryCountRef.current++;
 
     const ws = new WebSocket(wsUrl);
     let hasConnected = false;
 
     ws.onopen = () => {
       hasConnected = true;
+      hasEverConnectedRef.current = true;
+      retryCountRef.current = 0; // Reset retry count on successful connection
       isConnectingRef.current = false;
       setConnectionStatus("connected");
       setWsConnection(ws);
@@ -174,7 +192,8 @@ export function useWebSocketConnection({
   // Initial connection and reconnection polling
   useEffect(() => {
     shouldReconnectRef.current = true;
-    
+    retryCountRef.current = 0; // Reset retry count when port changes
+
     // Close any existing connection before creating a new one
     if (wsConnectionRef.current?.readyState === WebSocket.OPEN) {
       wsConnectionRef.current.close();
@@ -184,13 +203,13 @@ export function useWebSocketConnection({
       clearTimeout(reconnectTimeoutRef.current);
       reconnectTimeoutRef.current = null;
     }
-    
+
     connectWebSocket();
 
     return () => {
       // Prevent reconnection attempts during cleanup
       shouldReconnectRef.current = false;
-      
+
       // Cleanup: close connection and clear reconnection timeout
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
