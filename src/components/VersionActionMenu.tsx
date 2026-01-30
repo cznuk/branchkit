@@ -5,6 +5,7 @@ import { PromoteIcon } from "./icons/PromoteIcon";
 import { OpenInEditorIcon } from "./icons/OpenInEditorIcon";
 import { DeleteIcon } from "./icons/DeleteIcon";
 import { RenameIcon } from "./icons/RenameIcon";
+import { MenuItem } from "./MenuItem";
 
 interface VersionActionMenuProps {
   version: string;
@@ -51,48 +52,41 @@ export function VersionActionMenu({
       }}
       role="menu"
     >
-      <button
+      <MenuItem
+        icon={PromoteIcon}
+        label="Promote"
         onClick={(e) => {
           onPromote(version, e);
           onClose();
         }}
-        className={`${styles.popoverMenuItem} ${styles.menuItem}`}
-      >
-        <PromoteIcon className={styles.popoverMenuItemIcon} />
-        <span>Promote</span>
-      </button>
-      <button
+      />
+      <MenuItem
+        icon={OpenInEditorIcon}
+        label="Open in editor"
         onClick={(e) => {
           onOpenInEditor(version, e);
           onClose();
         }}
-        className={`${styles.popoverMenuItem} ${styles.menuItem}`}
-      >
-        <OpenInEditorIcon className={styles.popoverMenuItemIcon} />
-        <span>Open in editor</span>
-      </button>
-      <button
+      />
+      <MenuItem
+        icon={DeleteIcon}
+        label="Delete"
+        variant="delete"
+        stopPropagation
         onClick={(e) => {
-          e.stopPropagation();
           onDelete(version, e);
           onClose();
         }}
-        className={`${styles.popoverMenuItem} ${styles.menuItem} ${styles.popoverMenuItemDelete}`}
-      >
-        <DeleteIcon className={styles.popoverMenuItemIcon} />
-        <span>Delete</span>
-      </button>
-      <button
+      />
+      <MenuItem
+        icon={RenameIcon}
+        label="Rename"
+        stopPropagation
         onClick={(e) => {
-          e.stopPropagation();
           onRename(version, e);
           onClose();
         }}
-        className={`${styles.popoverMenuItem} ${styles.menuItem}`}
-      >
-        <RenameIcon className={styles.popoverMenuItemIcon} />
-        <span>Rename</span>
-      </button>
+      />
     </div>,
     rootElement,
   );
