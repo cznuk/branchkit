@@ -21,6 +21,15 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
   const tooltipRef = useRef<HTMLDivElement | null>(null);
   const showTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const portalRootRef = useRef<HTMLElement | null>(null);
+
+  // Find uifork-root element for portal
+  useEffect(() => {
+    const rootEl = document.getElementById("uifork-root");
+    if (rootEl) {
+      portalRootRef.current = rootEl;
+    }
+  }, []);
 
   useEffect(() => {
     if (!isVisible || !triggerRef.current || !tooltipRef.current) return;
@@ -162,6 +171,11 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
     },
   } as any);
 
+  const portalRoot =
+    portalRootRef.current ||
+    document.getElementById("uifork-root") ||
+    document.body;
+
   return (
     <>
       {childWithProps}
@@ -179,7 +193,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
           >
             {label}
           </div>,
-          document.body,
+          portalRoot,
         )}
     </>
   );
