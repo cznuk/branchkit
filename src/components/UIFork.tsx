@@ -19,6 +19,7 @@ import {
   ComponentSelectorDropdown,
 } from "./ComponentSelector";
 import { VersionsList } from "./VersionsList";
+import { SettingsView } from "./SettingsView";
 
 // Custom hooks
 import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
@@ -60,6 +61,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
   // UI state
   const [isOpen, setIsOpen] = useState(false);
   const [isComponentSelectorOpen, setIsComponentSelectorOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [openPopoverVersion, setOpenPopoverVersion] = useState<string | null>(
     null,
   );
@@ -200,7 +202,10 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     onClosePopover: () => setOpenPopoverVersion(null),
     onCloseComponentSelector: () => setIsComponentSelectorOpen(false),
     onCancelRename: cancelRename,
-    onClose: () => setIsOpen(false),
+    onClose: () => {
+      setIsOpen(false);
+      setIsSettingsOpen(false);
+    },
   });
 
   // Click outside handling
@@ -220,11 +225,13 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       }
       if (isOpen) {
         setIsOpen(false);
+        setIsSettingsOpen(false);
       }
     }, [
       openPopoverVersion,
       editingVersion,
       isComponentSelectorOpen,
+      isSettingsOpen,
       isOpen,
       cancelRename,
     ]),
@@ -406,7 +413,10 @@ export function UIFork({ port = 3001 }: UIForkProps) {
               key="trigger"
               suppressHydrationWarning
               ref={triggerRef}
-              onClick={() => setIsOpen(true)}
+              onClick={() => {
+                setIsOpen(true);
+                setIsSettingsOpen(false);
+              }}
               aria-label="Select UI version"
               aria-expanded={false}
               aria-haspopup="listbox"
@@ -501,6 +511,8 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                     )}
                   </button>
                 </div>
+              ) : isSettingsOpen ? (
+                <SettingsView onBack={() => setIsSettingsOpen(false)} />
               ) : (
                 <>
                   {/* Component selector */}
@@ -509,6 +521,10 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                     onToggle={() =>
                       setIsComponentSelectorOpen(!isComponentSelectorOpen)
                     }
+                    onSettingsClick={(e) => {
+                      e.stopPropagation();
+                      setIsSettingsOpen(true);
+                    }}
                   />
 
                   <div className={styles.divider} />

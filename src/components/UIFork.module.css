@@ -103,6 +103,14 @@
   flex-direction: column;
 }
 
+/* Component selector row */
+.componentSelectorRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+}
+
 /* Component selector button */
 .componentSelector {
   padding: 8px 12px;
@@ -117,8 +125,8 @@
   background-color: #303030;
 }
 .componentSelector {
+  flex: 1;
   display: flex;
-  width: 100%;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -132,6 +140,27 @@
 .componentSelectorIcon {
   width: 12px;
   height: 12px;
+}
+
+.componentSelectorSettings {
+  padding: 8px;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: background-color 0.15s;
+}
+.componentSelectorSettings:hover {
+  background-color: #303030;
+}
+
+.componentSelectorSettingsIcon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Divider */
@@ -473,4 +502,54 @@
   margin-bottom: 4px;
   padding-left: 4px;
   font-weight: 500;
+}
+
+/* Settings view */
+.settingsView {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.settingsBackButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: white;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s;
+}
+.settingsBackButton:hover {
+  background-color: #303030;
+}
+
+.settingsBackIcon {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
+}
+
+.settingsContent {
+  padding: 12px;
+  flex: 1;
+}
+
+.settingsTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  margin: 0 0 8px 0;
+}
+
+.settingsText {
+  font-size: 14px;
+  color: #a3a3a3;
+  margin: 0;
+  line-height: 1.5;
 }

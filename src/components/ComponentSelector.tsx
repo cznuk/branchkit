@@ -1,13 +1,15 @@
 import React from "react";
 import { motion } from "motion/react";
 import styles from "./UIFork.module.css";
-import { ChevronRightIcon } from "./icons/ChevronRightIcon";
+import { ChevronDownIcon } from "./icons/ChevronDownIcon";
+import { GearIcon } from "./icons/GearIcon";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import type { ComponentInfo } from "../types";
 
 interface ComponentSelectorProps {
   selectedComponent: string;
   onToggle: () => void;
+  onSettingsClick: (e: React.MouseEvent) => void;
 }
 
 const ANIMATION_DURATION = 0.3;
@@ -16,28 +18,39 @@ const ANIMATION_EASING = [0.04, 1.02, 0.13, 1.02] as const;
 export function ComponentSelector({
   selectedComponent,
   onToggle,
+  onSettingsClick,
 }: ComponentSelectorProps) {
   return (
-    <button
-      data-component-selector
-      onClick={onToggle}
-      className={styles.componentSelector}
-    >
-      <motion.span
-        layoutId="component-name"
-        layout="position"
-        className={styles.componentSelectorLabel}
-        transition={{
-          layout: {
-            duration: ANIMATION_DURATION,
-            ease: ANIMATION_EASING,
-          },
-        }}
+    <div className={styles.componentSelectorRow}>
+      <button
+        data-component-selector
+        onClick={onToggle}
+        className={styles.componentSelector}
       >
-        {selectedComponent || "Select component"}
-      </motion.span>
-      <ChevronRightIcon className={styles.componentSelectorIcon} />
-    </button>
+        <motion.span
+          layoutId="component-name"
+          layout="position"
+          className={styles.componentSelectorLabel}
+          transition={{
+            layout: {
+              duration: ANIMATION_DURATION,
+              ease: ANIMATION_EASING,
+            },
+          }}
+        >
+          {selectedComponent || "Select component"}
+        </motion.span>
+        <ChevronDownIcon className={styles.componentSelectorIcon} />
+      </button>
+      <button
+        onClick={onSettingsClick}
+        className={styles.componentSelectorSettings}
+        title="Settings"
+        aria-label="Open settings"
+      >
+        <GearIcon className={styles.componentSelectorSettingsIcon} />
+      </button>
+    </div>
   );
 }
 
