@@ -138,6 +138,17 @@ $fg-secondary: var(--uifork-fg-secondary);
   font-family: $font-family;
 }
 
+
+/* Override cursor when dragging */
+.container[data-dragging="true"] {
+  cursor: grabbing !important;
+}
+
+.container[data-dragging="true"] * {
+  cursor: grabbing !important;
+}
+
+
 /* Trigger button */
 .trigger {
   display: flex;
