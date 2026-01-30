@@ -104,9 +104,19 @@ export { VERSIONS }
     console.log(
       `1. Your original component is now ${this.componentName}.v1${this.originalExtension}`,
     );
-    console.log(`2. Add <UIFork /> to your app root (only in development):`);
+    console.log(`2. UIFork will auto-initialize if you've set it up in your HTML.`);
+    console.log(`   For Vite, add to your index.html <head>:`);
+    console.log(`
+   <script type="module">
+     if (import.meta.env.DEV) {
+       import("uifork/auto-init");
+     }
+   </script>
+`);
+    console.log(`   Or manually add <UIFork /> to your app root (only in development):`);
     console.log(`
    import { UIFork } from "uifork"
+   import "uifork/style.css"
    
    function App() {
      return (

@@ -14,7 +14,13 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     },
-    "./style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css",
+    "./auto-init": {
+      "import": "./dist/auto-init.mjs",
+      "require": "./dist/auto-init.js"
+    },
+    "./global": "./dist/index.global.js",
+    "./global.css": "./dist/index.global.css"
   },
   "files": [
     "dist",
@@ -23,7 +29,9 @@
     "version-sync.js"
   ],
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --config vite.global.config.ts",
+    "build:lib": "vite build",
+    "build:global": "vite build --config vite.global.config.ts",
     "dev": "vite build --watch",
     "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -10,7 +10,106 @@ npm install uifork
 
 ## Quick Start
 
-### 1. Add the UIFork component to your app
+### 1. Add UIFork to your app
+
+UIFork can be automatically initialized by importing it in your HTML or app entry point. Choose the method that works best for your setup:
+
+#### Option A: Auto-initialization (Recommended)
+
+**For Vite projects:**
+
+Add to your `index.html` `<head>`:
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <script type="module">
+    // Only load in development
+    if (import.meta.env.DEV) {
+      import("uifork/auto-init");
+    }
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
+```
+
+**For Next.js (App Router):**
+
+Add to your `app/layout.tsx`:
+
+```tsx
+import Script from "next/script";
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <head>
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/uifork/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+          />
+          <link rel="stylesheet" href="//unpkg.com/uifork/dist/index.global.css" />
+        )}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**For Next.js (Pages Router):**
+
+Add to your `pages/_document.tsx`:
+
+```tsx
+import { Html, Head, Main, NextScript } from "next/document";
+import Script from "next/script";
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        {process.env.NODE_ENV === "development" && (
+          <>
+            <Script
+              src="//unpkg.com/uifork/dist/index.global.js"
+              crossOrigin="anonymous"
+              strategy="beforeInteractive"
+            />
+            <link rel="stylesheet" href="//unpkg.com/uifork/dist/index.global.css" />
+          </>
+        )}
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}
+```
+
+**For Webpack/Other bundlers:**
+
+Import in your app entry point:
+
+```tsx
+// In your main.tsx or index.tsx
+if (process.env.NODE_ENV === "development") {
+  import("uifork/auto-init");
+}
+```
+
+#### Option B: Manual initialization
+
+If you prefer to manually add the component:
 
 ```tsx
 import { UIFork } from "uifork";
@@ -144,11 +243,35 @@ A floating UI widget that appears in your app during development. It connects to
 - **Promote versions** - When satisfied, promote a version to become the main component
 - **Open in editor** - Click to open the version file in VS Code or Cursor
 
+**Auto-initialization:**
+
+UIFork automatically mounts itself when imported via `uifork/auto-init` or loaded via the global script. No manual component rendering needed!
+
+**Manual usage:**
+
+If you prefer manual control:
+
 ```tsx
 import { UIFork } from "uifork";
 import "uifork/style.css";
 
 <UIFork port={3001} />; // port defaults to 3001
+```
+
+**Configuration:**
+
+You can configure UIFork via HTML data attributes:
+
+```html
+<!-- Set custom port -->
+<html data-uifork-port="3002">
+  <!-- ... -->
+</html>
+
+<!-- Force enable in production (not recommended) -->
+<html data-uifork-enable="true">
+  <!-- ... -->
+</html>
 ```
 
 **Features:**
