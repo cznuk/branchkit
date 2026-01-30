@@ -1,6 +1,6 @@
 import { Card } from "../components/Card";
 
-export function Example3() {
+function Example3() {
   return (
     <Card className="w-[400px] h-[300px]">
       <div className="flex flex-col items-center space-y-4 h-full justify-center">
@@ -45,3 +45,5 @@ export function Example3() {
     </Card>
   );
 }
+
+export default Example3;

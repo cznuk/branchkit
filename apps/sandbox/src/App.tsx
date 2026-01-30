@@ -1,8 +1,8 @@
 import { useTheme } from "./components/theme-provider";
 import { ExampleContainer } from "./components/ExampleContainer";
-import { Example1 } from "./examples/Example1";
-import { Example2 } from "./examples/Example2";
-import { Example3 } from "./examples/Example3";
+import Example1 from "./examples/Example1";
+import Example2 from "./examples/Example2";
+import Example3 from "./examples/Example3";
 
 function App() {
   const { theme, setTheme } = useTheme();
