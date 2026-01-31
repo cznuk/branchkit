@@ -204,7 +204,7 @@
   height: 16px;
   transition:
     transform 0.2s,
-    color 0.2s,
+    color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
     width 0.2s;
   color: var(--uifork-fg-secondary);
 }
