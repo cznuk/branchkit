@@ -213,46 +213,31 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     },
   });
 
-  // Click outside handling
+  // Click outside handling for main dropdown
+  // Note: ComponentSelectorDropdown and VersionActionMenu handle their own click-outside
   useClickOutside({
-    isActive: isOpen || openPopoverVersion !== null || isComponentSelectorOpen,
-    refs: [triggerRef, containerRef, componentSelectorRef],
+    isActive: isOpen,
+    refs: [triggerRef, containerRef],
     onClickOutside: useCallback(() => {
-      if (openPopoverVersion) {
-        setOpenPopoverVersion(null);
-        return;
-      }
       if (editingVersion) {
         cancelRename();
       }
-      if (isComponentSelectorOpen) {
-        setIsComponentSelectorOpen(false);
+      setIsOpen(false);
+      setIsSettingsOpen(false);
+      setIsComponentSelectorOpen(false);
+    }, [editingVersion, cancelRename]),
+    additionalCheck: useCallback((target: Node) => {
+      // Check if clicking inside component selector dropdown (portaled outside container)
+      if (componentSelectorRef.current?.contains(target)) {
+        return true;
       }
-      if (isOpen) {
-        setIsOpen(false);
-        setIsSettingsOpen(false);
+      // Check if clicking inside popover elements (portaled outside container)
+      const popoverElements = document.querySelectorAll("[data-popover-dropdown]");
+      for (const el of popoverElements) {
+        if (el.contains(target)) return true;
       }
-    }, [
-      openPopoverVersion,
-      editingVersion,
-      isComponentSelectorOpen,
-      isSettingsOpen,
-      isOpen,
-      cancelRename,
-    ]),
-    additionalCheck: useCallback(
-      (target: Node) => {
-        // Check if clicking inside popover elements
-        if (openPopoverVersion) {
-          const popoverElements = document.querySelectorAll("[data-popover-dropdown]");
-          for (const el of popoverElements) {
-            if (el.contains(target)) return true;
-          }
-        }
-        return false;
-      },
-      [openPopoverVersion],
-    ),
+      return false;
+    }, []),
   });
 
   // Mount effect
@@ -602,6 +587,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
             setSelectedComponent(componentName);
             setIsComponentSelectorOpen(false);
           }}
+          onClose={() => setIsComponentSelectorOpen(false)}
           componentSelectorRef={componentSelectorRef}
         />
       )}

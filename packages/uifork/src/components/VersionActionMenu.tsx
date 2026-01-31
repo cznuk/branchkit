@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import styles from "./UIFork.module.css";
 import { PromoteIcon } from "./icons/PromoteIcon";
@@ -6,6 +6,7 @@ import { OpenInEditorIcon } from "./icons/OpenInEditorIcon";
 import { DeleteIcon } from "./icons/DeleteIcon";
 import { RenameIcon } from "./icons/RenameIcon";
 import { MenuItem } from "./MenuItem";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 interface VersionActionMenuProps {
   version: string;
@@ -28,6 +29,30 @@ export function VersionActionMenu({
   onClose,
   setDropdownRef,
 }: VersionActionMenuProps) {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Combine local ref with callback ref from parent
+  const combinedRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      (dropdownRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+      setDropdownRef(el);
+    },
+    [setDropdownRef],
+  );
+
+  // Close menu when clicking outside
+  useClickOutside({
+    isActive: true,
+    refs: [dropdownRef],
+    onClickOutside: onClose,
+    // Don't close when clicking the trigger button (it handles its own toggle)
+    additionalCheck: (target) => {
+      const element = target as Element;
+      // Check if clicking inside the actions area (which contains the trigger)
+      return !!element.closest?.("[data-actions]");
+    },
+  });
+
   // Get the root wrapper element so we portal into it for theme inheritance
   const rootElement =
     typeof document !== "undefined"
@@ -44,7 +69,7 @@ export function VersionActionMenu({
   // Render in a portal to escape the scroll container and allow overflow
   return createPortal(
     <div
-      ref={setDropdownRef}
+      ref={combinedRef}
       className={styles.popover}
       data-popover-dropdown
       style={{

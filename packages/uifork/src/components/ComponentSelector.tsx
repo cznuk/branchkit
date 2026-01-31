@@ -6,6 +6,7 @@ import { GearIcon } from "./icons/GearIcon";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import type { ComponentInfo } from "../types";
 import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
+import { useClickOutside } from "../hooks/useClickOutside";
 
 interface ComponentSelectorProps {
   selectedComponent: string;
@@ -58,6 +59,7 @@ export function ComponentSelectorDropdown({
   isOpen,
   position,
   onSelect,
+  onClose,
   componentSelectorRef,
 }: {
   mountedComponents: ComponentInfo[];
@@ -65,8 +67,21 @@ export function ComponentSelectorDropdown({
   isOpen: boolean;
   position: { x: number; y: number };
   onSelect: (componentName: string) => void;
+  onClose: () => void;
   componentSelectorRef: React.RefObject<HTMLDivElement>;
 }) {
+  // Close dropdown when clicking outside
+  useClickOutside({
+    isActive: isOpen,
+    refs: [componentSelectorRef],
+    onClickOutside: onClose,
+    // Don't close when clicking the trigger button (it handles its own toggle)
+    additionalCheck: (target) => {
+      const element = target as Element;
+      return !!element.closest?.("[data-component-selector]");
+    },
+  });
+
   if (!isOpen) return null;
 
   return (
