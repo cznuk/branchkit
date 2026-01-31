@@ -32,12 +32,7 @@ import {
   useVersionKeyboardShortcuts,
   useDropdownKeyboard,
 } from "../hooks/useKeyboardShortcuts";
-
-// Animation duration constant (in seconds)
-const ANIMATION_DURATION = 0.3;
-
-// Animation easing curve (cubic-bezier)
-const ANIMATION_EASING = [0.04, 1.02, 0.13, 1.02] as const;
+import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
 
 // UI View States
 type ActiveView =
@@ -849,7 +844,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
               {activeView === "opened-no-connection" && (
                 <div className={styles.emptyStateContainer}>
                   <h3 className={styles.emptyStateHeading}>
-                    Start the Local Server
+                    Start the uifork server
                   </h3>
                   <p className={styles.emptyStateText}>
                     Run the watch command in your project root to connect

@@ -5,15 +5,13 @@ import { ChevronDownIcon } from "./icons/ChevronDownIcon";
 import { GearIcon } from "./icons/GearIcon";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import type { ComponentInfo } from "../types";
+import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
 
 interface ComponentSelectorProps {
   selectedComponent: string;
   onToggle: () => void;
   onSettingsClick: (e: React.MouseEvent) => void;
 }
-
-const ANIMATION_DURATION = 0.3;
-const ANIMATION_EASING = [0.04, 1.02, 0.13, 1.02] as const;
 
 export function ComponentSelector({
   selectedComponent,
