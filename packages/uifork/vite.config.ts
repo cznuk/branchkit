@@ -1,10 +1,11 @@
-import { defineConfig } from "vite";
+import preserveDirectives from "rollup-preserve-directives";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import { resolve } from "path";
 
 export default defineConfig({
-  plugins: [react(), dts({ include: ["src"] })],
+  plugins: [react(), dts({ include: ["src"] }), preserveDirectives() as Plugin],
   build: {
     lib: {
       entry: {
