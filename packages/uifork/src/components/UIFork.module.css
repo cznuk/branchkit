@@ -27,7 +27,7 @@
   --uifork-bg-hover: #f5f5f5;
   --uifork-button-hover: #e5e5e5;
   --uifork-bg-input: #e5e5e5;
-  --uifork-border-color: #d4d4d4;
+  --uifork-border-color: #f0f0f0;
   --uifork-text-primary: #171717;
   --uifork-text-secondary: #525252;
   --uifork-text-muted: #737373;
@@ -648,7 +648,6 @@
   color: var(--uifork-fg);
   background-color: transparent;
   border: none;
-  border-radius: 4px;
   cursor: pointer;
   text-align: left;
   width: 100%;
@@ -693,6 +692,32 @@
   margin-bottom: 4px;
   padding-left: 4px;
   font-weight: 500;
+}
+
+.componentSelectorDropdownHint {
+  font-size: 11px;
+  color: var(--uifork-text-muted);
+  padding: 8px 6px 4px;
+  line-height: 1.4;
+  max-width: 200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.componentSelectorDropdownHintIcon {
+  flex-shrink: 0;
+  color: var(--uifork-text-muted);
+  margin-top: 1px;
+}
+
+.componentSelectorDropdownHintCode {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  background: var(--uifork-bg-hover);
+  color: var(--uifork-fg);
+  padding: 2px 5px;
+  border-radius: 4px;
 }
 
 /* Settings view */

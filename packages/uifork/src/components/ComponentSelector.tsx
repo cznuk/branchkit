@@ -4,6 +4,7 @@ import styles from "./UIFork.module.css";
 import { ChevronDownIcon } from "./icons/ChevronDownIcon";
 import { GearIcon } from "./icons/GearIcon";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
+import { InfoIcon } from "./icons/InfoIcon";
 import type { ComponentInfo } from "../types";
 import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
 import { useClickOutside } from "../hooks/useClickOutside";
@@ -94,7 +95,7 @@ export function ComponentSelectorDropdown({
         visibility: "hidden",
       }}
     >
-      <div className={styles.componentSelectorDropdownTitle}>Branched components</div>
+      <div className={styles.componentSelectorDropdownTitle}>Forked components</div>
       {mountedComponents.length === 0 ? (
         <div className={styles.emptyState}>No mounted components found</div>
       ) : (
@@ -116,6 +117,13 @@ export function ComponentSelectorDropdown({
           </button>
         ))
       )}
+      <div className={styles.componentSelectorDropdownHint}>
+        <InfoIcon className={styles.componentSelectorDropdownHintIcon} />
+        <span>
+          Use <code className={styles.componentSelectorDropdownHintCode}>uifork init</code> to
+          iterate on more components
+        </span>
+      </div>
     </div>
   );
 }
