@@ -10,7 +10,7 @@ export type VersionsType<T extends Record<string, unknown> = Record<string, unkn
   [key: string]: VersionType<T>;
 };
 
-export type BranchedComponentProps<T extends Record<string, unknown> = Record<string, unknown>> = {
+export type ForkedComponentProps<T extends Record<string, unknown> = Record<string, unknown>> = {
   id: string;
   versions: VersionsType<T>;
   props: T;

@@ -1,4 +1,4 @@
-import { BranchIcon } from "./icons/BranchIcon";
+import { ForkIcon } from "./icons/ForkIcon";
 import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
 import styles from "./UIFork.module.css";
 import { motion } from "motion/react";
@@ -27,7 +27,7 @@ const TriggerContent = ({
         <>
           {connectionStatus === "disconnected" || connectionStatus === "failed" ? (
             <div className={styles.triggerIconContainer}>
-              <BranchIcon className={styles.triggerIcon} />
+              <ForkIcon className={styles.triggerIcon} />
               <div className={styles.connectionErrorDot} title="Disconnected from watch server" />
             </div>
           ) : (
@@ -38,14 +38,14 @@ const TriggerContent = ({
                   title="Connecting..."
                 />
               )}
-              <BranchIcon className={styles.triggerIcon} />
+              <ForkIcon className={styles.triggerIcon} />
             </>
           )}
         </>
       ) : (
         // Icon+label state: connected with components
         <>
-          <BranchIcon className={styles.triggerIcon} />
+          <ForkIcon className={styles.triggerIcon} />
           <motion.span
             layoutId="component-name"
             layout="position"

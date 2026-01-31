@@ -1,21 +1,21 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { registerComponent, unregisterComponent } from "../utils/componentRegistry";
-import type { BranchedComponentProps } from "../types";
+import type { ForkedComponentProps } from "../types";
 
 /**
  * A component that renders a specific version based on localStorage state.
  * Used to wrap components that have multiple versions managed by uifork.
  *
  * The UIFork component controls which version is active by writing to localStorage.
- * BranchedComponent reads from localStorage and renders the appropriate version.
+ * ForkedComponent reads from localStorage and renders the appropriate version.
  */
-export function LazyBranchedComponent<T extends Record<string, unknown>>({
+export function LazyForkedComponent<T extends Record<string, unknown>>({
   id,
   versions,
   props,
   defaultVersion,
-}: BranchedComponentProps<T>) {
+}: ForkedComponentProps<T>) {
   const versionKeys = Object.keys(versions);
   const initialVersion = defaultVersion || versionKeys[0];
 

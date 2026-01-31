@@ -133,7 +133,7 @@ npx uifork init src/components/Button.tsx
 
 This will:
 
-- Convert your component into a branched component that can be versioned
+- Convert your component into a forked component that can be versioned
 - Generate a `versions.ts` file to track all versions
 - Start the watch server
 
@@ -303,17 +303,17 @@ You can configure UIFork via HTML data attributes:
 - Settings panel for theme (light/dark/system), position, and code editor preference
 - Automatically discovers all versioned components in your app
 
-### `BranchedComponent`
+### `ForkedComponent`
 
 The wrapper component that renders the active version. This is automatically generated when you run `npx uifork init`, but you can also use it manually:
 
 ```tsx
-import { BranchedComponent } from "uifork";
+import { ForkedComponent } from "uifork";
 import { VERSIONS } from "./Button.versions";
 
 export default function Button(props) {
   return (
-    <BranchedComponent
+    <ForkedComponent
       id="Button"
       versions={VERSIONS}
       props={props}
@@ -346,9 +346,9 @@ Versions follow a simple naming convention:
 
 ## How It Works
 
-1. **`BranchedComponent`** reads the active version from localStorage and renders the corresponding component
+1. **`ForkedComponent`** reads the active version from localStorage and renders the corresponding component
 2. **`UIFork`** connects to the watch server and displays all available versions
-3. When you select a version in the UI, it updates localStorage, which triggers `BranchedComponent` to re-render with the new version
+3. When you select a version in the UI, it updates localStorage, which triggers `ForkedComponent` to re-render with the new version
 4. The watch server monitors your file system for new version files and automatically updates the `versions.ts` file
 
 ## Development Setup

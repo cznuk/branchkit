@@ -47,7 +47,7 @@ resolve: {
 This allows you to import components like:
 
 ```ts
-import { UIFork, BranchedComponent } from "uifork";
+import { UIFork, ForkedComponent } from "uifork";
 ```
 
 And they'll be loaded directly from the source files, enabling hot module replacement during development.

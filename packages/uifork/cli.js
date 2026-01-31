@@ -12,7 +12,7 @@ function showHelp() {
 uifork - A CLI tool for managing UI component versions
 
 Usage:
-  uifork init <component-path>                    Initialize a new branched component
+  uifork init <component-path>                    Initialize a new forked component
   uifork watch [directory]                        Watch for version changes (defaults to current directory)
   uifork new <component-path> [version-id]        Create a new version
   uifork fork <component-path> <version-id> [target-version]  Fork/duplicate a version
@@ -32,7 +32,7 @@ Examples:
   uifork promote SomeDropdownComponent v2
 
 Commands:
-  init      Convert a single component file into a versioned branched component
+  init      Convert a single component file into a versioned forked component
   watch     Start the watch server and discover all versioned components
   new       Create a new version (auto-increments if version-id not provided)
   fork      Fork/duplicate a version (auto-increments target if not provided)

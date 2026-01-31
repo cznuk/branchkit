@@ -208,7 +208,7 @@
   transform: rotate(180deg);
 }
 
-/* Connection error dot (red dot in bottom right of branch icon) */
+/* Connection error dot (red dot in bottom right of fork icon) */
 .connectionErrorDot {
   position: absolute;
   bottom: -2px;

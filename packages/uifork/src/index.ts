@@ -1,7 +1,7 @@
 // Components
 export { UIFork } from "./components/UIFork";
-export { BranchedComponent } from "./components/BranchedComponent";
-export { LazyBranchedComponent } from "./components/LazyBranchedComponent";
+export { ForkedComponent } from "./components/ForkedComponent";
+export { LazyForkedComponent } from "./components/LazyForkedComponent";
 
 // Hooks
 export { useLocalStorage } from "./hooks/useLocalStorage";
@@ -10,7 +10,7 @@ export { useLocalStorage } from "./hooks/useLocalStorage";
 export type {
   VersionType,
   VersionsType,
-  BranchedComponentProps,
+  ForkedComponentProps,
   UIForkProps,
   ComponentInfo,
 } from "./types";
