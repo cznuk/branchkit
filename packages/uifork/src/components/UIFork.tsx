@@ -11,7 +11,6 @@ import { motion, AnimatePresence, useDragControls } from "motion/react";
 import type { UIForkProps } from "../types";
 import styles from "./UIFork.module.css";
 import { PlusIcon } from "./icons/PlusIcon";
-import { BranchIcon } from "./icons/BranchIcon";
 import { CopyIcon } from "./icons/CopyIcon";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import {
@@ -33,15 +32,8 @@ import {
   useDropdownKeyboard,
 } from "../hooks/useKeyboardShortcuts";
 import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
-
-// UI View States
-type ActiveView =
-  | "closed-trigger-icon"
-  | "closed-trigger-label"
-  | "opened-version-list"
-  | "opened-no-components"
-  | "opened-no-connection"
-  | "opened-settings";
+import TriggerContent from "./TriggerContent";
+import { ActiveView } from "./types";
 
 /**
  * UIFork - A floating UI component that renders a version picker in the bottom right.
@@ -780,50 +772,13 @@ export function UIFork({ port = 3001 }: UIForkProps) {
               }}
               draggable={false}
             >
-              {activeView === "closed-trigger-icon" ? (
-                // Icon-only state: error, connecting, or no components
-                <>
-                  {connectionStatus === "disconnected" ||
-                  connectionStatus === "failed" ? (
-                    <div className={styles.triggerIconContainer}>
-                      <BranchIcon className={styles.triggerIcon} />
-                      <div
-                        className={styles.connectionErrorDot}
-                        title="Disconnected from watch server"
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      {connectionStatus === "connecting" && (
-                        <div
-                          className={`${styles.statusIndicator} ${styles.statusIndicatorConnecting}`}
-                          title="Connecting..."
-                        />
-                      )}
-                      <BranchIcon className={styles.triggerIcon} />
-                    </>
-                  )}
-                </>
-              ) : (
-                // Icon+label state: connected with components
-                <>
-                  <BranchIcon className={styles.triggerIcon} />
-                  <motion.span
-                    layoutId="component-name"
-                    layout="position"
-                    className={styles.triggerLabel}
-                    transition={{
-                      duration: ANIMATION_DURATION,
-                      ease: ANIMATION_EASING,
-                    }}
-                  >
-                    {selectedComponent || "No component"}
-                  </motion.span>
-                  <span className={styles.triggerVersion}>
-                    {activeVersion ? formatVersionLabel(activeVersion) : "-"}
-                  </span>
-                </>
-              )}
+              <TriggerContent
+                activeView={activeView}
+                connectionStatus={connectionStatus}
+                selectedComponent={selectedComponent}
+                activeVersion={activeVersion}
+                formatVersionLabel={formatVersionLabel}
+              />
             </motion.button>
           ) : (
             <motion.div
