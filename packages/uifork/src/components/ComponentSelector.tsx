@@ -62,6 +62,7 @@ export function ComponentSelectorDropdown({
   onSelect,
   onClose,
   componentSelectorRef,
+  isConnected,
 }: {
   mountedComponents: ComponentInfo[];
   selectedComponent: string;
@@ -70,6 +71,7 @@ export function ComponentSelectorDropdown({
   onSelect: (componentName: string) => void;
   onClose: () => void;
   componentSelectorRef: React.RefObject<HTMLDivElement>;
+  isConnected: boolean;
 }) {
   // Close dropdown when clicking outside
   useClickOutside({
@@ -117,13 +119,15 @@ export function ComponentSelectorDropdown({
           </button>
         ))
       )}
-      <div className={styles.componentSelectorDropdownHint}>
-        <InfoIcon className={styles.componentSelectorDropdownHintIcon} />
-        <span>
-          Use <code className={styles.componentSelectorDropdownHintCode}>npx uifork init</code> to
-          iterate on more components
-        </span>
-      </div>
+      {isConnected && (
+        <div className={styles.componentSelectorDropdownHint}>
+          <InfoIcon className={styles.componentSelectorDropdownHintIcon} />
+          <span>
+            Use <code className={styles.componentSelectorDropdownHintCode}>npx uifork init</code> to
+            iterate on more components
+          </span>
+        </div>
+      )}
     </div>
   );
 }

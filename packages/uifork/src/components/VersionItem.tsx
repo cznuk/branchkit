@@ -54,53 +54,49 @@ export function VersionItem({
         {isSelected && <CheckmarkIcon className={styles.checkmarkIcon} />}
       </div>
       <div className={styles.versionLabel}>{formatVersionLabel(version)}</div>
-      {/* Action buttons */}
-      <div data-actions className={styles.actions} onClick={(e) => e.stopPropagation()}>
-        <Tooltip label={isConnected ? "Fork version" : "Connect to server to fork"} placement="top">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (isConnected) {
-                onDuplicate(version, e);
-              }
-            }}
-            className={`${styles.actionButton} ${!isConnected ? styles.disabled : ""}`}
-            aria-disabled={!isConnected}
-          >
-            <GitForkIcon className={styles.actionIcon} />
-          </button>
-        </Tooltip>
-        <div className={styles.actionButtonMore}>
-          <Tooltip label={isConnected ? "More options" : "Connect to server for more options"} placement="top">
+      {/* Action buttons - only show when connected */}
+      {isConnected && (
+        <div data-actions className={styles.actions} onClick={(e) => e.stopPropagation()}>
+          <Tooltip label="Fork version" placement="top">
             <button
-              ref={(el) => setPopoverTriggerRef(version, el)}
               onClick={(e) => {
                 e.stopPropagation();
-                if (isConnected) {
-                  onTogglePopover(version, e);
-                }
+                onDuplicate(version, e);
               }}
-              className={`${styles.actionButton} ${!isConnected ? styles.disabled : ""}`}
-              aria-disabled={!isConnected}
+              className={styles.actionButton}
             >
-              <MoreOptionsIcon className={styles.actionIcon} />
+              <GitForkIcon className={styles.actionIcon} />
             </button>
           </Tooltip>
-          {/* Popover menu */}
-          {isPopoverOpen && isConnected && (
-            <VersionActionMenu
-              version={version}
-              position={popoverPosition || { x: 0, y: 0 }}
-              onPromote={onPromote}
-              onOpenInEditor={onOpenInEditor}
-              onDelete={onDelete}
-              onRename={onRename}
-              onClose={() => onTogglePopover(version)}
-              setDropdownRef={(el) => setPopoverDropdownRef(version, el)}
-            />
-          )}
+          <div className={styles.actionButtonMore}>
+            <Tooltip label="More options" placement="top">
+              <button
+                ref={(el) => setPopoverTriggerRef(version, el)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTogglePopover(version, e);
+                }}
+                className={styles.actionButton}
+              >
+                <MoreOptionsIcon className={styles.actionIcon} />
+              </button>
+            </Tooltip>
+            {/* Popover menu */}
+            {isPopoverOpen && (
+              <VersionActionMenu
+                version={version}
+                position={popoverPosition || { x: 0, y: 0 }}
+                onPromote={onPromote}
+                onOpenInEditor={onOpenInEditor}
+                onDelete={onDelete}
+                onRename={onRename}
+                onClose={() => onTogglePopover(version)}
+                setDropdownRef={(el) => setPopoverDropdownRef(version, el)}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

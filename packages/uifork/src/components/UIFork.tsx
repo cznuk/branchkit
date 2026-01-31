@@ -10,6 +10,7 @@ import { VersionsList } from "./VersionsList";
 import { SettingsView } from "./SettingsView";
 import { EmptyStateNoComponents } from "./EmptyStateNoComponents";
 import { NewVersionButton } from "./NewVersionButton";
+import { OfflineMessage } from "./OfflineMessage";
 
 // Custom hooks
 import { useWebSocketConnection } from "../hooks/useWebSocketConnection";
@@ -553,8 +554,12 @@ export function UIFork({ port = 3001 }: UIForkProps) {
 
                   <div className={styles.divider} />
 
-                  {/* New version button */}
-                  <NewVersionButton onClick={handleNewVersion} disabled={!isConnected} />
+                  {/* New version button or offline message */}
+                  {isConnected ? (
+                    <NewVersionButton onClick={handleNewVersion} />
+                  ) : (
+                    <OfflineMessage />
+                  )}
                 </>
               )}
             </motion.div>
@@ -575,6 +580,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
           }}
           onClose={() => setIsComponentSelectorOpen(false)}
           componentSelectorRef={componentSelectorRef}
+          isConnected={isConnected}
         />
       )}
     </>,
