@@ -1,4 +1,3 @@
-import { autoUpdate, computePosition, flip, offset, shift } from "@floating-ui/dom";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
@@ -20,7 +19,8 @@ import { useClickOutside } from "../hooks/useClickOutside";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { useVersionKeyboardShortcuts, useDropdownKeyboard } from "../hooks/useKeyboardShortcuts";
 import { useDragToCorner } from "../hooks/useDragToCorner";
-import { getContainerPosition, getTransformOrigin, type Position } from "../utils/positioning";
+import { useContainerPositioning } from "../hooks/useContainerPositioning";
+import type { Position } from "../utils/positioning";
 import { ANIMATION_DURATION, ANIMATION_EASING } from "./constants";
 import TriggerContent from "./TriggerContent";
 import { ActiveView } from "./types";
@@ -50,10 +50,6 @@ export function UIFork({ port = 3001 }: UIForkProps) {
   const [isComponentSelectorOpen, setIsComponentSelectorOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [openPopoverVersion, setOpenPopoverVersion] = useState<string | null>(null);
-  const [componentSelectorPosition, setComponentSelectorPosition] = useState({
-    x: 0,
-    y: 0,
-  });
   const [copied, setCopied] = useState(false);
 
   // Root ref for theme wrapper
@@ -72,6 +68,16 @@ export function UIFork({ port = 3001 }: UIForkProps) {
   const [codeEditor, setCodeEditor] = useLocalStorage<"vscode" | "cursor">(
     "uifork-code-editor",
     "vscode",
+  );
+
+  // Container and component selector positioning hook
+  const { containerPosition, transformOrigin, componentSelectorPosition } = useContainerPositioning(
+    {
+      position,
+      isComponentSelectorOpen,
+      containerRef,
+      componentSelectorRef,
+    },
   );
 
   // Drag to corner hook
@@ -246,35 +252,6 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     ),
   });
 
-  // Position component selector dropdown
-  useEffect(() => {
-    if (!isComponentSelectorOpen || !containerRef.current || !componentSelectorRef.current) return;
-    const trigger = containerRef.current.querySelector("[data-component-selector]") as HTMLElement;
-    if (!trigger) return;
-
-    const updatePosition = async () => {
-      try {
-        const { x, y } = await computePosition(
-          containerRef.current!,
-          componentSelectorRef.current!,
-          {
-            placement: "left-start",
-            strategy: "fixed",
-            middleware: [offset(4), flip(), shift({ padding: 8 })],
-          },
-        );
-        setComponentSelectorPosition({ x, y });
-        if (componentSelectorRef.current) componentSelectorRef.current.style.visibility = "visible";
-      } catch {
-        // Error positioning component selector
-      }
-    };
-    if (componentSelectorRef.current) componentSelectorRef.current.style.visibility = "hidden";
-    updatePosition();
-    const cleanup = autoUpdate(containerRef.current, componentSelectorRef.current, updatePosition);
-    return cleanup;
-  }, [isComponentSelectorOpen]);
-
   // Mount effect
   useEffect(() => {
     setIsMounted(true);
@@ -382,11 +359,6 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       // Failed to copy command
     }
   }, []);
-
-  // Calculate container position based on settings
-  const containerPosition = React.useMemo(() => getContainerPosition(position), [position]);
-
-  const transformOrigin = React.useMemo(() => getTransformOrigin(position), [position]);
 
   // Create or get root element for theming
   useEffect(() => {

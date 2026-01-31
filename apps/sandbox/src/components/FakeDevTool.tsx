@@ -5,7 +5,7 @@ export function FakeDevTool() {
     <Tooltip>
       <TooltipTrigger asChild>
         <button
-          className="fixed bottom-6 left-6 w-8 h-8 rounded-full bg-black border-none cursor-pointer shadow-lg z-[9999] transition-transform hover:scale-110 hover:shadow-xl flex items-center justify-center"
+          className="fixed bottom-5 left-5 w-8 h-8 rounded-full bg-black border-none cursor-pointer shadow-lg z-[9999] transition-transform hover:scale-110 hover:shadow-xl flex items-center justify-center"
           aria-label="Fake dev tool"
         >
           <span
