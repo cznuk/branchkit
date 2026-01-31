@@ -7,7 +7,7 @@ interface UseComponentDiscoveryOptions {
   port: number;
 }
 
-export function useComponentDiscovery({ port }: UseComponentDiscoveryOptions) {
+export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOptions) {
   const [components, setComponents] = useState<ComponentInfo[]>([]);
   const [mountedComponentIds, setMountedComponentIds] = useState<string[]>([]);
   const [selectedComponent, setSelectedComponent] = useLocalStorage<string>(

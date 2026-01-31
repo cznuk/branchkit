@@ -62,7 +62,7 @@ export function usePopoverPosition({
             // Add class to trigger CSS animation
             dropdown.classList.add(styles.popoverVisible);
           }
-        } catch (error) {
+        } catch {
           // Error positioning popover
         }
       };

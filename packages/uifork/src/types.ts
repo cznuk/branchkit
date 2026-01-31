@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode } from "react";
+import type { ComponentType } from "react";
 
 export type VersionType<
   T extends Record<string, unknown> = Record<string, unknown>,

@@ -302,7 +302,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
         setComponentSelectorPosition({ x, y });
         if (componentSelectorRef.current)
           componentSelectorRef.current.style.visibility = "visible";
-      } catch (error) {
+      } catch {
         // Error positioning component selector
       }
     };
@@ -390,7 +390,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       if (!response.ok) {
         await response.json();
       }
-    } catch (error) {
+    } catch {
       // Error opening in editor
     }
     setOpenPopoverVersion(null);
@@ -408,7 +408,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       await navigator.clipboard.writeText(command);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       // Failed to copy command
     }
   }, []);
@@ -420,7 +420,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       await navigator.clipboard.writeText(command);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
+    } catch {
       // Failed to copy command
     }
   }, []);
@@ -451,7 +451,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
 
   // Handle drag end - snap to nearest corner
   const handleDragEnd = useCallback(
-    (event: PointerEvent, info: { point: { x: number; y: number } }) => {
+    (_event: PointerEvent, _info: { point: { x: number; y: number } }) => {
       setIsDragging(false);
       setDragEnabled(false);
       setPointerStart(null);

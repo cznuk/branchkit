@@ -67,7 +67,7 @@ function recursiveSearchVersionsFile(dir, componentName) {
         }
       }
     }
-  } catch (error) {
+  } catch {
     // Skip directories we can't read
   }
 

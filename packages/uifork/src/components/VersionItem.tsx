@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import styles from "./UIFork.module.css";
 import { CheckmarkIcon } from "./icons/CheckmarkIcon";
 import { GitForkIcon } from "./icons/GitForkIcon";

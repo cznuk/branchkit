@@ -155,7 +155,7 @@ export function useWebSocketConnection({
       }
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = (_error) => {
       // WebSocket error
       isConnectingRef.current = false;
       // Mark as failed if we haven't connected yet
@@ -196,7 +196,7 @@ export function useWebSocketConnection({
         } else if (data.type === "error") {
           onErrorRef.current?.(data.payload?.message || "Unknown error");
         }
-      } catch (error) {
+      } catch {
         // Error parsing WebSocket message
       }
     };

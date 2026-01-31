@@ -65,7 +65,7 @@ class VersionSync {
     return `${folderName}${this.versionToImportSuffix(versionStr)}`;
   }
 
-  generateVersionKey(fileName, index) {
+  generateVersionKey(fileName, _index) {
     const match = fileName.match(/^v([\d_]+)/);
     if (!match) return null;
 
@@ -151,7 +151,7 @@ ${versions},
         .filter(Boolean);
 
       return new Set(keys);
-    } catch (error) {
+    } catch {
       return new Set();
     }
   }
@@ -233,7 +233,6 @@ ${versions},
       (eventType, filename) => {
         if (!filename) return;
 
-        const filePath = path.join(this.watchDir, filename);
         const isVersionFile = /^v[\d_]+\.(tsx?|jsx?)$/.test(filename);
         const isVersionsFile = filename === "versions.ts";
 

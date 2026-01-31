@@ -15,7 +15,7 @@ export function useLocalStorage<T>(
     try {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
-    } catch (error) {
+    } catch {
       // Error reading localStorage key
       return initialValue;
     }
@@ -53,7 +53,7 @@ export function useLocalStorage<T>(
           }
           return valueToStore;
         });
-      } catch (error) {
+      } catch {
         // Error setting localStorage key
       }
     },
@@ -67,7 +67,7 @@ export function useLocalStorage<T>(
       if (e.key === key && e.newValue) {
         try {
           setStoredValue(JSON.parse(e.newValue));
-        } catch (error) {
+        } catch {
           // Error parsing localStorage value
         }
       }

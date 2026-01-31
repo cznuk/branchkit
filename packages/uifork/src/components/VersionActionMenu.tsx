@@ -20,7 +20,7 @@ interface VersionActionMenuProps {
 
 export function VersionActionMenu({
   version,
-  position,
+  position: _position,
   onPromote,
   onOpenInEditor,
   onDelete,

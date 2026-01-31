@@ -56,7 +56,7 @@ export function Tooltip({ label, children, placement = "top" }: TooltipProps) {
             tooltipRef.current.classList.add(styles.tooltipVisible);
           }
         }
-      } catch (error) {
+      } catch {
         // Error positioning tooltip
       }
     };

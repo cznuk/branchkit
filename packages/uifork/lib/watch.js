@@ -213,7 +213,7 @@ class ComponentManager {
 
       const keys = new Set(Object.keys(versionBlocks));
       return { keys, versions: versionBlocks };
-    } catch (error) {
+    } catch {
       return { keys: new Set(), versions: {} };
     }
   }
@@ -310,7 +310,6 @@ class ComponentManager {
         const defaultLabel = this.versionToId(`v${versionStr}`)
           .substring(1)
           .toUpperCase();
-        const filePath = `./${file.replace(/\.(tsx?|jsx?)$/, "")}`;
 
         let existingVersion = existingVersions[key] || {};
 
