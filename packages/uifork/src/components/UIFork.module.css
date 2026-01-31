@@ -202,12 +202,21 @@
 .triggerIcon {
   width: 16px;
   height: 16px;
-  transition: transform 0.2s;
+  transition:
+    transform 0.2s,
+    color 0.2s,
+    width 0.2s;
+  color: var(--uifork-fg-secondary);
 }
 .triggerIcon.triggerIconOpen {
   transform: rotate(180deg);
 }
-
+.triggerIcon.triggerIconOnline {
+  color: #22c55e; /* green-500 */
+}
+.triggerIcon.triggerIconOffline {
+  color: var(--uifork-fg-secondary);
+}
 /* Connection error dot (red dot in bottom right of fork icon) */
 .connectionErrorDot {
   position: absolute;
@@ -488,6 +497,13 @@
 }
 .actionButton:hover .actionIcon {
   color: var(--uifork-fg);
+}
+
+/* Disabled state for buttons and actions when offline */
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .actionButtonMore {

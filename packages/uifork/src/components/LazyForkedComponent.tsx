@@ -26,12 +26,13 @@ export function LazyForkedComponent<T extends Record<string, unknown>>({
   );
 
   // Register/unregister this component when it mounts/unmounts
+  // Pass version keys so they're available for offline mode
   useEffect(() => {
-    registerComponent(id);
+    registerComponent(id, versionKeys);
     return () => {
       unregisterComponent(id);
     };
-  }, [id]);
+  }, [id, versionKeys.join(",")]);
 
   const [lastValidVersion, setLastValidVersion] = useState<string>(
     versionKeys.includes(activeVersion) ? activeVersion : initialVersion,

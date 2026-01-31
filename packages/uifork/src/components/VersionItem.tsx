@@ -12,6 +12,7 @@ interface VersionItemProps {
   formatVersionLabel: (version: string) => string;
   popoverPosition: { x: number; y: number } | undefined;
   isPopoverOpen: boolean;
+  isConnected: boolean;
   onSelect: (version: string) => void;
   onDuplicate: (version: string, e: React.MouseEvent) => void;
   onTogglePopover: (version: string, e?: React.MouseEvent) => void;
@@ -29,6 +30,7 @@ export function VersionItem({
   formatVersionLabel,
   popoverPosition,
   isPopoverOpen,
+  isConnected,
   onSelect,
   onDuplicate,
   onTogglePopover,
@@ -54,32 +56,38 @@ export function VersionItem({
       <div className={styles.versionLabel}>{formatVersionLabel(version)}</div>
       {/* Action buttons */}
       <div data-actions className={styles.actions} onClick={(e) => e.stopPropagation()}>
-        <Tooltip label="Fork version" placement="top">
+        <Tooltip label={isConnected ? "Fork version" : "Connect to server to fork"} placement="top">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onDuplicate(version, e);
+              if (isConnected) {
+                onDuplicate(version, e);
+              }
             }}
-            className={`${styles.actionButton}`}
+            className={`${styles.actionButton} ${!isConnected ? styles.disabled : ""}`}
+            aria-disabled={!isConnected}
           >
             <GitForkIcon className={styles.actionIcon} />
           </button>
         </Tooltip>
         <div className={styles.actionButtonMore}>
-          <Tooltip label="More options" placement="top">
+          <Tooltip label={isConnected ? "More options" : "Connect to server for more options"} placement="top">
             <button
               ref={(el) => setPopoverTriggerRef(version, el)}
               onClick={(e) => {
                 e.stopPropagation();
-                onTogglePopover(version, e);
+                if (isConnected) {
+                  onTogglePopover(version, e);
+                }
               }}
-              className={`${styles.actionButton}`}
+              className={`${styles.actionButton} ${!isConnected ? styles.disabled : ""}`}
+              aria-disabled={!isConnected}
             >
               <MoreOptionsIcon className={styles.actionIcon} />
             </button>
           </Tooltip>
           {/* Popover menu */}
-          {isPopoverOpen && (
+          {isPopoverOpen && isConnected && (
             <VersionActionMenu
               version={version}
               position={popoverPosition || { x: 0, y: 0 }}

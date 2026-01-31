@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
-import { getMountedComponents, subscribe } from "../utils/componentRegistry";
+import { getMountedComponents, getAllComponentsWithVersions, subscribe } from "../utils/componentRegistry";
 import type { ComponentInfo } from "../types";
 
 interface UseComponentDiscoveryOptions {
@@ -8,7 +8,10 @@ interface UseComponentDiscoveryOptions {
 }
 
 export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOptions) {
-  const [components, setComponents] = useState<ComponentInfo[]>([]);
+  // WebSocket-provided components (has file paths)
+  const [wsComponents, setWsComponents] = useState<ComponentInfo[]>([]);
+  // Local registry components (built from ForkedComponent registrations)
+  const [localComponents, setLocalComponents] = useState<Array<{ name: string; versions: string[] }>>([]);
   const [mountedComponentIds, setMountedComponentIds] = useState<string[]>([]);
   const [selectedComponent, setSelectedComponent] = useLocalStorage<string>(
     "uifork-selected-component",
@@ -16,37 +19,46 @@ export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOpti
     true,
   );
 
+  // Build effective components list: prefer WebSocket data if available, fallback to local registry
+  // WebSocket data has file paths, local registry only has names and versions
+  const components: ComponentInfo[] = wsComponents.length > 0
+    ? wsComponents
+    : localComponents.map((c) => ({ name: c.name, path: "", versions: c.versions }));
+
   // Filter components to only show mounted ones
   const mountedComponents = components.filter((c) => mountedComponentIds.includes(c.name));
 
   // Handle components update from WebSocket
   const handleComponentsUpdate = useCallback(
     (
-      wsComponents: Array<{
+      newWsComponents: Array<{
         name: string;
         path: string;
         versions: string[];
       }>,
     ) => {
-      setComponents(wsComponents);
+      setWsComponents(newWsComponents);
 
       // If no component selected yet, select the first one
-      if (!selectedComponent && wsComponents.length > 0) {
-        setSelectedComponent(wsComponents[0].name);
+      if (!selectedComponent && newWsComponents.length > 0) {
+        setSelectedComponent(newWsComponents[0].name);
       }
     },
     [selectedComponent, setSelectedComponent],
   );
 
-  // Subscribe to component registry changes
+  // Subscribe to component registry changes (for both mounted IDs and local versions)
   useEffect(() => {
+    const updateFromRegistry = () => {
+      setMountedComponentIds(getMountedComponents());
+      setLocalComponents(getAllComponentsWithVersions());
+    };
+
     // Initialize with current mounted components
-    setMountedComponentIds(getMountedComponents());
+    updateFromRegistry();
 
     // Subscribe to changes
-    const unsubscribe = subscribe(() => {
-      setMountedComponentIds(getMountedComponents());
-    });
+    const unsubscribe = subscribe(updateFromRegistry);
 
     return unsubscribe;
   }, []);

@@ -11,6 +11,7 @@ interface VersionsListProps {
   formatVersionLabel: (version: string) => string;
   openPopoverVersion: string | null;
   popoverPositions: Map<string, { x: number; y: number }>;
+  isConnected: boolean;
   onSelectVersion: (version: string) => void;
   onDuplicateVersion: (version: string, e: React.MouseEvent) => void;
   onTogglePopover: (version: string, e?: React.MouseEvent) => void;
@@ -33,6 +34,7 @@ export function VersionsList({
   formatVersionLabel,
   openPopoverVersion,
   popoverPositions,
+  isConnected,
   onSelectVersion,
   onDuplicateVersion,
   onTogglePopover,
@@ -80,6 +82,7 @@ export function VersionsList({
               formatVersionLabel={formatVersionLabel}
               popoverPosition={popoverPositions.get(key)}
               isPopoverOpen={openPopoverVersion === key}
+              isConnected={isConnected}
               onSelect={onSelectVersion}
               onDuplicate={onDuplicateVersion}
               onTogglePopover={onTogglePopover}

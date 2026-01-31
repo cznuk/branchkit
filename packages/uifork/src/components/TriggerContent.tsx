@@ -11,6 +11,7 @@ type TriggerContentProps = {
   selectedComponent: string;
   activeVersion: string;
   formatVersionLabel: (version: string) => string;
+  isConnected: boolean;
 };
 
 const TriggerContent = ({
@@ -19,6 +20,7 @@ const TriggerContent = ({
   selectedComponent,
   activeVersion,
   formatVersionLabel,
+  isConnected,
 }: TriggerContentProps) => {
   return (
     <>
@@ -27,7 +29,7 @@ const TriggerContent = ({
         <>
           {connectionStatus === "disconnected" || connectionStatus === "failed" ? (
             <div className={styles.triggerIconContainer}>
-              <ForkIcon className={styles.triggerIcon} />
+              <ForkIcon className={`${styles.triggerIcon} ${styles.triggerIconOffline}`} />
               <div className={styles.connectionErrorDot} title="Disconnected from watch server" />
             </div>
           ) : (
@@ -45,7 +47,7 @@ const TriggerContent = ({
       ) : (
         // Icon+label state: connected with components
         <>
-          <ForkIcon className={styles.triggerIcon} />
+          <ForkIcon className={`${styles.triggerIcon} ${isConnected ? styles.triggerIconOnline : styles.triggerIconOffline}`} />
           <motion.span
             layoutId="component-name"
             layout="position"

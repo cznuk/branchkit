@@ -8,7 +8,6 @@ import styles from "./UIFork.module.css";
 import { ComponentSelector, ComponentSelectorDropdown } from "./ComponentSelector";
 import { VersionsList } from "./VersionsList";
 import { SettingsView } from "./SettingsView";
-import { EmptyStateNoConnection } from "./EmptyStateNoConnection";
 import { EmptyStateNoComponents } from "./EmptyStateNoComponents";
 import { NewVersionButton } from "./NewVersionButton";
 
@@ -338,18 +337,6 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     }
   }, []);
 
-  // Copy watch command to clipboard
-  const handleCopyWatchCommand = useCallback(async () => {
-    const command = "npx uifork watch";
-    try {
-      await navigator.clipboard.writeText(command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Failed to copy command
-    }
-  }, []);
-
   // Create or get root element for theming
   useEffect(() => {
     if (!isMounted) return;
@@ -371,27 +358,25 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     };
   }, [isMounted, theme, styles]);
 
+  // Determine if we're connected to the WebSocket server
+  const isConnected = connectionStatus === "connected";
+
   // Determine active view based on current state
   const activeView: ActiveView = React.useMemo(() => {
     if (!isOpen) {
       // When closed, determine if we show icon-only or icon+label
-      const hasConnection = connectionStatus !== "disconnected" && connectionStatus !== "failed";
       const hasComponents = mountedComponents.length > 0;
 
-      // Show icon+label when connected and has components
-      if (hasConnection && hasComponents) {
+      // Show icon+label when has components (works offline too now)
+      if (hasComponents) {
         return "closed-trigger-label";
       }
 
-      // Otherwise show icon-only (error, connecting, or no components)
+      // Otherwise show icon-only (connecting or no components)
       return "closed-trigger-icon";
     }
 
     // When dropdown is open, determine which view to show
-    if (connectionStatus === "disconnected" || connectionStatus === "failed") {
-      return "opened-no-connection";
-    }
-
     if (isSettingsOpen) {
       return "opened-settings";
     }
@@ -400,8 +385,9 @@ export function UIFork({ port = 3001 }: UIForkProps) {
       return "opened-no-components";
     }
 
+    // Show version list even when disconnected - actions will be disabled
     return "opened-version-list";
-  }, [isOpen, connectionStatus, isSettingsOpen, mountedComponents.length]);
+  }, [isOpen, isSettingsOpen, mountedComponents.length]);
 
   // Don't render until mounted on client (prevents hydration mismatch)
   if (!isMounted) {
@@ -488,6 +474,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                 selectedComponent={selectedComponent}
                 activeVersion={activeVersion}
                 formatVersionLabel={formatVersionLabel}
+                isConnected={isConnected}
               />
             </motion.button>
           ) : (
@@ -506,10 +493,6 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                 ease: ANIMATION_EASING,
               }}
             >
-              {activeView === "opened-no-connection" && (
-                <EmptyStateNoConnection onCopyCommand={handleCopyWatchCommand} copied={copied} />
-              )}
-
               {activeView === "opened-no-components" && (
                 <EmptyStateNoComponents onCopyCommand={handleCopyCommand} copied={copied} />
               )}
@@ -551,6 +534,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                     formatVersionLabel={formatVersionLabel}
                     openPopoverVersion={openPopoverVersion}
                     popoverPositions={popoverPositions}
+                    isConnected={isConnected}
                     onSelectVersion={(version) => {
                       setActiveVersion(version);
                     }}
@@ -570,7 +554,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                   <div className={styles.divider} />
 
                   {/* New version button */}
-                  <NewVersionButton onClick={handleNewVersion} />
+                  <NewVersionButton onClick={handleNewVersion} disabled={!isConnected} />
                 </>
               )}
             </motion.div>
