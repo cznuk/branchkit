@@ -284,8 +284,6 @@ class ComponentManager {
     const versions = versionFiles
       .map((file) => {
         const key = this.generateVersionKey(file);
-        const versionStr = key.substring(1);
-        const defaultLabel = this.versionToId(`v${versionStr}`).substring(1).toUpperCase();
 
         let existingVersion = existingVersions[key] || {};
 
@@ -302,7 +300,7 @@ class ComponentManager {
           console.log(`  Transferred description from ${sourceKey} to ${key}`);
         }
 
-        const label = existingVersion.label || defaultLabel;
+        const label = existingVersion.label || "";
         const description = existingVersion.description;
 
         const renderValue = this.lazy

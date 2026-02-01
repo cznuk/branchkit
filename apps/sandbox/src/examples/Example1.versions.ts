@@ -17,6 +17,6 @@ export const VERSIONS = {
   },
   "v3": {
     render: Example1V3,
-    label: "V3",
+    label: "",
   },
 }
