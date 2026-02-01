@@ -51,3 +51,11 @@ import { UIFork, ForkedComponent } from "uifork";
 ```
 
 And they'll be loaded directly from the source files, enabling hot module replacement during development.
+
+## Development
+
+To use the development version of the UIFork package, install uifork with a local link:
+
+```json
+"uifork": "file:../../uifork/packages/uifork"
+```
