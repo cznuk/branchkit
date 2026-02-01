@@ -8,6 +8,7 @@ import { Tooltip } from "./Tooltip";
 
 interface VersionItemProps {
   version: string;
+  label?: string;
   isSelected: boolean;
   formatVersionLabel: (version: string) => string;
   popoverPosition: { x: number; y: number } | undefined;
@@ -26,6 +27,7 @@ interface VersionItemProps {
 
 export function VersionItem({
   version,
+  label,
   isSelected,
   formatVersionLabel,
   popoverPosition,
@@ -41,6 +43,9 @@ export function VersionItem({
   setPopoverTriggerRef,
   setPopoverDropdownRef,
 }: VersionItemProps) {
+  // Display the custom label if available, otherwise format the version key
+  const displayLabel = label || formatVersionLabel(version);
+
   return (
     <div
       role="option"
@@ -53,7 +58,7 @@ export function VersionItem({
       <div className={styles.checkmarkContainer}>
         {isSelected && <CheckmarkIcon className={styles.checkmarkIcon} />}
       </div>
-      <div className={styles.versionLabel}>{formatVersionLabel(version)}</div>
+      <div className={styles.versionLabel}>{displayLabel}</div>
       {/* Action buttons - only show when connected */}
       {isConnected && (
         <div data-actions className={styles.actions} onClick={(e) => e.stopPropagation()}>

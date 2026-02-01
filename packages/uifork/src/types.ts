@@ -22,9 +22,15 @@ export type UIForkProps = {
   port?: number;
 };
 
-/** Component info returned from the watch server */
+/** Version info with key and optional label */
+export type VersionInfo = {
+  key: string;
+  label?: string;
+};
+
+/** Component info returned from the watch server or local registry */
 export type ComponentInfo = {
   name: string;
   path: string;
-  versions: string[];
+  versions: VersionInfo[];
 };

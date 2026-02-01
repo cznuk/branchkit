@@ -1,17 +1,19 @@
 /**
  * Registry to track which components are currently mounted in the React tree.
  * This allows UIFork to only show components that are actually being used.
- * Also stores version information for offline mode support.
+ * Also stores version information (including labels) for offline mode support.
  */
 
-// Map of component id -> version keys array
-const mountedComponents = new Map<string, string[]>();
+import type { VersionInfo } from "../types";
+
+// Map of component id -> version info array (includes labels)
+const mountedComponents = new Map<string, VersionInfo[]>();
 const listeners = new Set<() => void>();
 
 /**
- * Register a component as mounted with its available versions
+ * Register a component as mounted with its available versions and labels
  */
-export function registerComponent(id: string, versions: string[] = []): void {
+export function registerComponent(id: string, versions: VersionInfo[] = []): void {
   mountedComponents.set(id, versions);
   notifyListeners();
 }
@@ -39,17 +41,17 @@ export function getMountedComponents(): string[] {
 }
 
 /**
- * Get version keys for a specific component
+ * Get version info for a specific component
  */
-export function getComponentVersions(id: string): string[] {
+export function getComponentVersions(id: string): VersionInfo[] {
   return mountedComponents.get(id) || [];
 }
 
 /**
- * Get all mounted components with their versions
+ * Get all mounted components with their versions (including labels)
  * Returns array of { name, versions } objects for offline mode
  */
-export function getAllComponentsWithVersions(): Array<{ name: string; versions: string[] }> {
+export function getAllComponentsWithVersions(): Array<{ name: string; versions: VersionInfo[] }> {
   return Array.from(mountedComponents.entries()).map(([name, versions]) => ({
     name,
     versions,

@@ -10,6 +10,7 @@ type TriggerContentProps = {
   connectionStatus: ConnectionStatus;
   selectedComponent: string;
   activeVersion: string;
+  activeVersionLabel?: string;
   formatVersionLabel: (version: string) => string;
   isConnected: boolean;
 };
@@ -19,9 +20,12 @@ const TriggerContent = ({
   connectionStatus,
   selectedComponent,
   activeVersion,
+  activeVersionLabel,
   formatVersionLabel,
   isConnected,
 }: TriggerContentProps) => {
+  // Display the custom label if available, otherwise format the version key
+  const displayVersion = activeVersionLabel || (activeVersion ? formatVersionLabel(activeVersion) : "-");
   return (
     <>
       {activeView === "closed-trigger-icon" ? (
@@ -60,7 +64,7 @@ const TriggerContent = ({
             {selectedComponent || "No component"}
           </motion.span>
           <span className={styles.triggerVersion}>
-            {activeVersion ? formatVersionLabel(activeVersion) : "-"}
+            {displayVersion}
           </span>
         </>
       )}

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { registerComponent, unregisterComponent } from "../utils/componentRegistry";
 import type { ForkedComponentProps } from "../types";
@@ -19,6 +19,16 @@ export function LazyForkedComponent<T extends Record<string, unknown>>({
   const versionKeys = Object.keys(versions);
   const initialVersion = defaultVersion || versionKeys[0];
 
+  // Create version info array with keys and labels for the registry
+  const versionInfos = useMemo(
+    () =>
+      Object.entries(versions).map(([key, version]) => ({
+        key,
+        label: version.label,
+      })),
+    [versions],
+  );
+
   const [activeVersion, setActiveVersion] = useLocalStorage<string>(
     id,
     initialVersion,
@@ -26,13 +36,13 @@ export function LazyForkedComponent<T extends Record<string, unknown>>({
   );
 
   // Register/unregister this component when it mounts/unmounts
-  // Pass version keys so they're available for offline mode
+  // Pass version info (including labels) so they're available for offline mode
   useEffect(() => {
-    registerComponent(id, versionKeys);
+    registerComponent(id, versionInfos);
     return () => {
       unregisterComponent(id);
     };
-  }, [id, versionKeys.join(",")]);
+  }, [id, versionInfos]);
 
   const [lastValidVersion, setLastValidVersion] = useState<string>(
     versionKeys.includes(activeVersion) ? activeVersion : initialVersion,

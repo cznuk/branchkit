@@ -2,9 +2,10 @@ import React from "react";
 import styles from "./UIFork.module.css";
 import { VersionItem } from "./VersionItem";
 import { VersionNameEditor } from "./VersionNameEditor";
+import type { VersionInfo } from "../types";
 
 interface VersionsListProps {
-  versionKeys: string[];
+  versions: VersionInfo[];
   activeVersion: string;
   editingVersion: string | null;
   renameValue: string;
@@ -27,7 +28,7 @@ interface VersionsListProps {
 }
 
 export function VersionsList({
-  versionKeys,
+  versions,
   activeVersion,
   editingVersion,
   renameValue,
@@ -48,16 +49,17 @@ export function VersionsList({
   setPopoverTriggerRef,
   setPopoverDropdownRef,
 }: VersionsListProps) {
-  if (versionKeys.length === 0) {
+  if (versions.length === 0) {
     return <div className={styles.emptyState}>No versions found</div>;
   }
 
   return (
     <div className={styles.versionsList}>
-      {versionKeys
+      {versions
         .slice()
         .reverse()
-        .map((key) => {
+        .map((versionInfo) => {
+          const { key, label } = versionInfo;
           const isSelected = key === activeVersion;
           const isEditing = editingVersion === key;
 
@@ -78,6 +80,7 @@ export function VersionsList({
             <VersionItem
               key={key}
               version={key}
+              label={label}
               isSelected={isSelected}
               formatVersionLabel={formatVersionLabel}
               popoverPosition={popoverPositions.get(key)}

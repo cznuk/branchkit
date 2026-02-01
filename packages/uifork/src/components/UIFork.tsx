@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "motion/react";
-import type { UIForkProps } from "../types";
+import type { UIForkProps, VersionInfo } from "../types";
 import styles from "./UIFork.module.css";
 import { ComponentSelector, ComponentSelectorDropdown } from "./ComponentSelector";
 import { VersionsList } from "./VersionsList";
@@ -109,9 +109,16 @@ export function UIFork({ port = 3001 }: UIForkProps) {
     selectedComponentRef.current = selectedComponent;
   }, [selectedComponent]);
 
-  // Get current component's versions
+  // Get current component's versions (includes labels)
   const currentComponent = mountedComponents.find((c) => c.name === selectedComponent);
-  const versionKeys = currentComponent?.versions || [];
+  const versions: VersionInfo[] = currentComponent?.versions || [];
+  // Extract just the keys for hooks that don't need labels
+  const versionKeys = versions.map((v) => v.key);
+
+  // Helper to get label for a version key
+  const getVersionLabel = (key: string): string | undefined => {
+    return versions.find((v) => v.key === key)?.label;
+  };
 
   // Version management hook
   const {
@@ -283,11 +290,10 @@ export function UIFork({ port = 3001 }: UIForkProps) {
 
   const handlePromoteVersion = (version: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const label = getVersionLabel(version) || formatVersionLabel(version);
     if (
       window.confirm(
-        `Are you sure you want to promote version ${formatVersionLabel(
-          version,
-        )}?\n\nThis will:\n- Replace the main component with this version\n- Remove all versioning scaffolding\n- This action cannot be undone`,
+        `Are you sure you want to promote version ${label}?\n\nThis will:\n- Replace the main component with this version\n- Remove all versioning scaffolding\n- This action cannot be undone`,
       )
     ) {
       sendMessage("promote_version", { version });
@@ -474,6 +480,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
                 connectionStatus={connectionStatus}
                 selectedComponent={selectedComponent}
                 activeVersion={activeVersion}
+                activeVersionLabel={getVersionLabel(activeVersion)}
                 formatVersionLabel={formatVersionLabel}
                 isConnected={isConnected}
               />
@@ -528,7 +535,7 @@ export function UIFork({ port = 3001 }: UIForkProps) {
 
                   {/* Versions list */}
                   <VersionsList
-                    versionKeys={versionKeys}
+                    versions={versions}
                     activeVersion={activeVersion}
                     editingVersion={editingVersion}
                     renameValue={renameValue}

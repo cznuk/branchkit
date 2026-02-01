@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 import { getMountedComponents, getAllComponentsWithVersions, subscribe } from "../utils/componentRegistry";
-import type { ComponentInfo } from "../types";
+import type { ComponentInfo, VersionInfo } from "../types";
 
 interface UseComponentDiscoveryOptions {
   port: number;
 }
 
 export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOptions) {
-  // WebSocket-provided components (has file paths)
-  const [wsComponents, setWsComponents] = useState<ComponentInfo[]>([]);
-  // Local registry components (built from ForkedComponent registrations)
-  const [localComponents, setLocalComponents] = useState<Array<{ name: string; versions: string[] }>>([]);
+  // WebSocket-provided components (has file paths, but only version keys without labels)
+  const [wsComponents, setWsComponents] = useState<Array<{
+    name: string;
+    path: string;
+    versions: string[];
+  }>>([]);
+  // Local registry components (built from ForkedComponent registrations, has labels)
+  const [localComponents, setLocalComponents] = useState<Array<{ name: string; versions: VersionInfo[] }>>([]);
   const [mountedComponentIds, setMountedComponentIds] = useState<string[]>([]);
   const [selectedComponent, setSelectedComponent] = useLocalStorage<string>(
     "uifork-selected-component",
@@ -19,10 +23,29 @@ export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOpti
     true,
   );
 
-  // Build effective components list: prefer WebSocket data if available, fallback to local registry
-  // WebSocket data has file paths, local registry only has names and versions
+  // Build effective components list:
+  // - Use WebSocket data for component list and paths
+  // - Merge with local registry to get version labels (since ForkedComponent has labels)
   const components: ComponentInfo[] = wsComponents.length > 0
-    ? wsComponents
+    ? wsComponents.map((wsComp) => {
+        // Find the local component to get labels
+        const localComp = localComponents.find((lc) => lc.name === wsComp.name);
+        
+        // Merge: use WS version keys, but add labels from local registry
+        const versionsWithLabels: VersionInfo[] = wsComp.versions.map((key) => {
+          const localVersion = localComp?.versions.find((v) => v.key === key);
+          return {
+            key,
+            label: localVersion?.label,
+          };
+        });
+        
+        return {
+          name: wsComp.name,
+          path: wsComp.path,
+          versions: versionsWithLabels,
+        };
+      })
     : localComponents.map((c) => ({ name: c.name, path: "", versions: c.versions }));
 
   // Filter components to only show mounted ones

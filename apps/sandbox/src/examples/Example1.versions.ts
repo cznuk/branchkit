@@ -5,13 +5,18 @@
  */
 import Example1V1 from "./Example1.v1"
 import Example1V2 from "./Example1.v2"
+import Example1V3 from "./Example1.v3"
 export const VERSIONS = {
   "v1": {
     render: Example1V1,
-    label: "V1 - my label",
+    label: "My label",
   },
   "v2": {
     render: Example1V2,
-    label: "V2 - better one",
+    label: "Better one",
+  },
+  "v3": {
+    render: Example1V3,
+    label: "V3",
   },
 }
