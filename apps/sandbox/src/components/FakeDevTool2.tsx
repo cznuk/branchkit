@@ -162,7 +162,6 @@ function VercelToolbarIcon() {
 
 // Self-contained draggable component that manages its own state
 function DraggableToolContent() {
-  console.log("DraggableToolContent: Rendering");
   const [position, setPosition] = useState<Position>(() => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
@@ -323,22 +322,22 @@ function DraggableToolContent() {
         y: { duration: ANIMATION_DURATION, ease: ANIMATION_EASING },
       }}
     >
-        <motion.div
-          className={`h-9 rounded-full border-none cursor-grab active:cursor-grabbing shadow-lg transition-transform hover:scale-110 hover:shadow-xl flex items-center justify-center gap-2 ${
-            isExpanded ? "bg-black pl-3 pr-3" : "bg-black px-2.5"
-          }`}
-          style={{
-            // Increased inset shadow opacity for clearer border
-            boxShadow:
-              "0 0 0 1px rgba(255,255,255,0.3) inset, 0 6px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.5)",
-          }}
-          role="button"
-          aria-label="Vercel Live Feedback"
-          tabIndex={0}
-          draggable={false}
-          animate={{ width: isExpanded ? "auto" : "36px" }}
-          transition={{ duration: ANIMATION_DURATION, ease: ANIMATION_EASING }}
-        >
+      <motion.div
+        className={`h-9 rounded-full border-none cursor-grab active:cursor-grabbing shadow-lg transition-transform hover:scale-110 hover:shadow-xl flex items-center justify-center gap-2 ${
+          isExpanded ? "bg-black pl-3 pr-3" : "bg-black px-2.5"
+        }`}
+        style={{
+          // Increased inset shadow opacity for clearer border
+          boxShadow:
+            "0 0 0 1px rgba(255,255,255,0.3) inset, 0 6px 12px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.5)",
+        }}
+        role="button"
+        aria-label="Vercel Live Feedback"
+        tabIndex={0}
+        draggable={false}
+        animate={{ width: isExpanded ? "auto" : "36px" }}
+        transition={{ duration: ANIMATION_DURATION, ease: ANIMATION_EASING }}
+      >
         <span className="flex-shrink-0 flex items-center justify-center">
           <VercelToolbarIcon />
         </span>
@@ -399,7 +398,8 @@ export function FakeDevTool2() {
     customElementRef.current = customElement;
 
     // Create shadow root
-    const shadowRoot = customElement.attachShadow({ mode: "closed" });
+    // Using "open" mode so UIFork can detect the fixed-position element inside
+    const shadowRoot = customElement.attachShadow({ mode: "open" });
 
     // Inject styles into shadow root
     const style = document.createElement("style");

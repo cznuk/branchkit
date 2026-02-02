@@ -213,6 +213,74 @@ function findNextJSDevToolsIndicator(): HTMLElement | null {
 }
 
 /**
+ * Helper function to find Vercel Live Feedback tool in shadow DOM.
+ * Looks for vercel-live-feedback custom elements and traverses their shadow roots
+ * to find the fixed-position draggable button element.
+ */
+function findVercelLiveFeedbackTool(): HTMLElement | null {
+  // Find all vercel-live-feedback custom elements
+  const vercelElements = document.querySelectorAll("vercel-live-feedback");
+  
+  for (const vercelElement of vercelElements) {
+    if (vercelElement instanceof HTMLElement) {
+      // Access the shadow root (now open, so accessible)
+      const shadowRoot = vercelElement.shadowRoot;
+      
+      if (shadowRoot) {
+        // Look for the shadow container div
+        const shadowContainer = shadowRoot.getElementById("shadow-container");
+        
+        if (shadowContainer) {
+          // Check direct children first (the motion.div is likely a direct child)
+          const directChildren = Array.from(shadowContainer.children);
+          
+          for (const child of directChildren) {
+            if (child instanceof HTMLElement) {
+              const computedStyle = window.getComputedStyle(child);
+              // Look for the fixed-position element (the outer motion.div wrapper)
+              if (computedStyle.position === "fixed") {
+                return child;
+              }
+            }
+          }
+          
+          // Fallback: check all descendants
+          const allChildren = shadowContainer.querySelectorAll("*");
+          
+          for (const child of allChildren) {
+            if (child instanceof HTMLElement) {
+              const computedStyle = window.getComputedStyle(child);
+              if (computedStyle.position === "fixed") {
+                return child;
+              }
+            }
+          }
+          
+          // Fallback: if shadow container itself is fixed, return it
+          const containerStyle = window.getComputedStyle(shadowContainer);
+          if (containerStyle.position === "fixed") {
+            return shadowContainer;
+          }
+        } else {
+          // Fallback: check direct children of shadow root
+          const shadowRootChildren = Array.from(shadowRoot.children);
+          for (const child of shadowRootChildren) {
+            if (child instanceof HTMLElement) {
+              const computedStyle = window.getComputedStyle(child);
+              if (computedStyle.position === "fixed") {
+                return child;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Parse the CSS translate property value.
  * Handles formats like "10px 20px", "10px", or "none"
  * Returns { x: number, y: number } with pixel values, or { x: 0, y: 0 } if not found.
@@ -394,6 +462,21 @@ function findFixedPositionElements(): DevToolPosition[] {
     );
   }
 
+  // Specifically look for Vercel Live Feedback tool in shadow DOM
+  const vercelTool = findVercelLiveFeedbackTool();
+  if (vercelTool) {
+    processFixedElement(
+      vercelTool,
+      uiforkRoot,
+      viewportWidth,
+      viewportHeight,
+      viewportCenterX,
+      viewportCenterY,
+      fixed,
+      false // isNextJSDevTools
+    );
+  }
+
   return fixed;
 }
 
@@ -406,6 +489,7 @@ function findFixedPositionElements(): DevToolPosition[] {
 export function useExistingDevToolPositions(enabled: boolean = true): DevToolPosition[] {
   const [fixedElements, setFixedElements] = useState<DevToolPosition[]>([]);
   const mutationObserversRef = useRef<Map<HTMLElement, MutationObserver>>(new Map());
+  const throttleTimersRef = useRef<Map<HTMLElement, number>>(new Map());
 
   useEffect(() => {
     if (!enabled) {
@@ -413,14 +497,24 @@ export function useExistingDevToolPositions(enabled: boolean = true): DevToolPos
       // Clean up any existing mutation observers
       mutationObserversRef.current.forEach((observer) => observer.disconnect());
       mutationObserversRef.current.clear();
+      throttleTimersRef.current.clear();
       return;
     }
 
     let isMounted = true;
+    const THROTTLE_MS = 100; // Only update at most once every 100ms per element
 
     // Re-process a single element and update its data in state
     const reprocessElement = (element: HTMLElement, isNextJSDevTools: boolean) => {
       if (!isMounted) return;
+
+      // Throttle updates to prevent excessive calls during drag
+      const lastUpdate = throttleTimersRef.current.get(element);
+      const now = Date.now();
+      if (lastUpdate && now - lastUpdate < THROTTLE_MS) {
+        return;
+      }
+      throttleTimersRef.current.set(element, now);
 
       const uiforkRoot = document.getElementById("uifork-root");
       const viewportWidth = window.innerWidth;
@@ -446,6 +540,7 @@ export function useExistingDevToolPositions(enabled: boolean = true): DevToolPos
           observer.disconnect();
           mutationObserversRef.current.delete(element);
         }
+        throttleTimersRef.current.delete(element);
         return;
       }
 
@@ -469,10 +564,11 @@ export function useExistingDevToolPositions(enabled: boolean = true): DevToolPos
         reprocessElement(element, isNextJSDevTools);
       });
 
+      // Only watch the element itself, not subtree, to reduce noise during drag
       observer.observe(element, {
         attributes: true,
         attributeFilter: ["style"],
-        subtree: true,
+        subtree: false, // Changed from true to false to reduce mutation events
       });
 
       mutationObserversRef.current.set(element, observer);
@@ -527,6 +623,7 @@ export function useExistingDevToolPositions(enabled: boolean = true): DevToolPos
       clearTimeout(timeoutId);
       mutationObserversRef.current.forEach((observer) => observer.disconnect());
       mutationObserversRef.current.clear();
+      throttleTimersRef.current.clear();
       window.removeEventListener("resize", handleResize);
     };
   }, [enabled]);
