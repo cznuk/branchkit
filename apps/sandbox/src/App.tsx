@@ -14,6 +14,7 @@ import {
 } from "./components/ui/dropdown-menu";
 import { TooltipProvider } from "./components/ui/tooltip";
 import { FakeDevTool } from "./components/FakeDevTool";
+import { FakeDevTool2 } from "./components/FakeDevTool2";
 import { ChevronDown } from "lucide-react";
 
 function App() {
@@ -94,6 +95,7 @@ function App() {
         </div>
 
         <FakeDevTool />
+        <FakeDevTool2 />
       </div>
     </TooltipProvider>
   );
