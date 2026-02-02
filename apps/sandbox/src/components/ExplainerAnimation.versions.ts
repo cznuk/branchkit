@@ -11,18 +11,27 @@ import ExplainerAnimationV5 from "./ExplainerAnimation.v5"
 import ExplainerAnimationV6 from "./ExplainerAnimation.v6"
 import ExplainerAnimationV7 from "./ExplainerAnimation.v7"
 import ExplainerAnimationV8 from "./ExplainerAnimation.v8"
+import ExplainerAnimationV9 from "./ExplainerAnimation.v9"
+import ExplainerAnimationV10 from "./ExplainerAnimation.v10"
+import ExplainerAnimationV11 from "./ExplainerAnimation.v11"
+import ExplainerAnimationV12 from "./ExplainerAnimation.v12"
+import ExplainerAnimationV13 from "./ExplainerAnimation.v13"
+import ExplainerAnimationV14 from "./ExplainerAnimation.v14"
+import ExplainerAnimationV15 from "./ExplainerAnimation.v15"
+import ExplainerAnimationV16 from "./ExplainerAnimation.v16"
+import ExplainerAnimationV17 from "./ExplainerAnimation.v17"
 export const VERSIONS = {
   "v1": {
     render: ExplainerAnimationV1,
-    label: "",
+    label: "First pass",
   },
   "v2": {
     render: ExplainerAnimationV2,
-    label: "",
+    label: "Placeholder content",
   },
   "v3": {
     render: ExplainerAnimationV3,
-    label: "",
+    label: "Added mini ui",
   },
   "v4": {
     render: ExplainerAnimationV4,
@@ -42,6 +51,42 @@ export const VERSIONS = {
   },
   "v8": {
     render: ExplainerAnimationV8,
+    label: "",
+  },
+  "v9": {
+    render: ExplainerAnimationV9,
+    label: "",
+  },
+  "v10": {
+    render: ExplainerAnimationV10,
+    label: "",
+  },
+  "v11": {
+    render: ExplainerAnimationV11,
+    label: "",
+  },
+  "v12": {
+    render: ExplainerAnimationV12,
+    label: "",
+  },
+  "v13": {
+    render: ExplainerAnimationV13,
+    label: "",
+  },
+  "v14": {
+    render: ExplainerAnimationV14,
+    label: "",
+  },
+  "v15": {
+    render: ExplainerAnimationV15,
+    label: "",
+  },
+  "v16": {
+    render: ExplainerAnimationV16,
+    label: "",
+  },
+  "v17": {
+    render: ExplainerAnimationV17,
     label: "",
   },
 }
