@@ -140,3 +140,12 @@ body {
   animation: fadeIn 0.6s ease-out forwards;
   opacity: 0;
 }
+
+.optional-fade-in {
+  opacity: 1;
+}
+
+body.demo-animate .optional-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
