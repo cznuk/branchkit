@@ -6,24 +6,45 @@
 
 import type { VersionInfo } from "../types";
 
-// Map of component id -> version info array (includes labels)
-const mountedComponents = new Map<string, VersionInfo[]>();
+// Map of component id -> { versions, refCount }
+// refCount tracks how many instances of this component are mounted
+const mountedComponents = new Map<string, { versions: VersionInfo[]; refCount: number }>();
 const listeners = new Set<() => void>();
 
 /**
- * Register a component as mounted with its available versions and labels
+ * Register a component as mounted with its available versions and labels.
+ * Uses reference counting to handle multiple instances of the same component.
  */
 export function registerComponent(id: string, versions: VersionInfo[] = []): void {
-  mountedComponents.set(id, versions);
-  notifyListeners();
+  const existing = mountedComponents.get(id);
+  if (existing) {
+    // Increment reference count for additional instances
+    mountedComponents.set(id, { versions, refCount: existing.refCount + 1 });
+  } else {
+    // First instance of this component
+    mountedComponents.set(id, { versions, refCount: 1 });
+    // Only notify listeners when a new component is added
+    notifyListeners();
+  }
 }
 
 /**
- * Unregister a component (when it unmounts)
+ * Unregister a component (when it unmounts).
+ * Only removes from registry when the last instance unmounts.
  */
 export function unregisterComponent(id: string): void {
-  mountedComponents.delete(id);
-  notifyListeners();
+  const existing = mountedComponents.get(id);
+  if (!existing) return;
+
+  if (existing.refCount > 1) {
+    // Still have other instances mounted, just decrement
+    mountedComponents.set(id, { versions: existing.versions, refCount: existing.refCount - 1 });
+  } else {
+    // Last instance unmounting, remove from registry
+    mountedComponents.delete(id);
+    // Only notify listeners when a component is fully removed
+    notifyListeners();
+  }
 }
 
 /**
@@ -44,7 +65,7 @@ export function getMountedComponents(): string[] {
  * Get version info for a specific component
  */
 export function getComponentVersions(id: string): VersionInfo[] {
-  return mountedComponents.get(id) || [];
+  return mountedComponents.get(id)?.versions || [];
 }
 
 /**
@@ -52,7 +73,7 @@ export function getComponentVersions(id: string): VersionInfo[] {
  * Returns array of { name, versions } objects for offline mode
  */
 export function getAllComponentsWithVersions(): Array<{ name: string; versions: VersionInfo[] }> {
-  return Array.from(mountedComponents.entries()).map(([name, versions]) => ({
+  return Array.from(mountedComponents.entries()).map(([name, { versions }]) => ({
     name,
     versions,
   }));

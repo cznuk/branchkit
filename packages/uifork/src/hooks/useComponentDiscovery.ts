@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 import { getMountedComponents, getAllComponentsWithVersions, subscribe } from "../utils/componentRegistry";
 import type { ComponentInfo, VersionInfo } from "../types";
@@ -26,30 +26,35 @@ export function useComponentDiscovery({ port: _port }: UseComponentDiscoveryOpti
   // Build effective components list:
   // - Use WebSocket data for component list and paths
   // - Merge with local registry to get version labels (since ForkedComponent has labels)
-  const components: ComponentInfo[] = wsComponents.length > 0
-    ? wsComponents.map((wsComp) => {
-        // Find the local component to get labels
-        const localComp = localComponents.find((lc) => lc.name === wsComp.name);
-        
-        // Merge: use WS version keys, but add labels from local registry
-        const versionsWithLabels: VersionInfo[] = wsComp.versions.map((key) => {
-          const localVersion = localComp?.versions.find((v) => v.key === key);
+  const components: ComponentInfo[] = useMemo(() => {
+    return wsComponents.length > 0
+      ? wsComponents.map((wsComp) => {
+          // Find the local component to get labels
+          const localComp = localComponents.find((lc) => lc.name === wsComp.name);
+
+          // Merge: use WS version keys, but add labels from local registry
+          const versionsWithLabels: VersionInfo[] = wsComp.versions.map((key) => {
+            const localVersion = localComp?.versions.find((v) => v.key === key);
+            return {
+              key,
+              label: localVersion?.label,
+            };
+          });
+
           return {
-            key,
-            label: localVersion?.label,
+            name: wsComp.name,
+            path: wsComp.path,
+            versions: versionsWithLabels,
           };
-        });
-        
-        return {
-          name: wsComp.name,
-          path: wsComp.path,
-          versions: versionsWithLabels,
-        };
-      })
-    : localComponents.map((c) => ({ name: c.name, path: "", versions: c.versions }));
+        })
+      : localComponents.map((c) => ({ name: c.name, path: "", versions: c.versions }));
+  }, [wsComponents, localComponents]);
 
   // Filter components to only show mounted ones
-  const mountedComponents = components.filter((c) => mountedComponentIds.includes(c.name));
+  const mountedComponents = useMemo(
+    () => components.filter((c) => mountedComponentIds.includes(c.name)),
+    [components, mountedComponentIds],
+  );
 
   // Handle components update from WebSocket
   const handleComponentsUpdate = useCallback(
