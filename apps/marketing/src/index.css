@@ -3,7 +3,49 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Geist Pixel – bitmap-inspired typeface from the Geist family */
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("../../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Square.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Pixel Grid";
+  src: url("../../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Grid.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Pixel Circle";
+  src: url("../../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Circle.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Pixel Triangle";
+  src: url("../../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Triangle.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Pixel Line";
+  src: url("../../../node_modules/geist/dist/fonts/geist-pixel/GeistPixel-Line.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  --font-geist-pixel-square: "Geist Pixel Square", ui-monospace, monospace;
+  --font-geist-pixel-grid: "Geist Pixel Grid", ui-monospace, monospace;
+  --font-geist-pixel-circle: "Geist Pixel Circle", ui-monospace, monospace;
+  --font-geist-pixel-triangle: "Geist Pixel Triangle", ui-monospace, monospace;
+  --font-geist-pixel-line: "Geist Pixel Line", ui-monospace, monospace;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.147 0.004 49.25);
@@ -76,6 +118,11 @@
 
 @theme inline {
   --font-sans: system-ui, sans-serif;
+  --font-pixel-square: var(--font-geist-pixel-square);
+  --font-pixel-grid: var(--font-geist-pixel-grid);
+  --font-pixel-circle: var(--font-geist-pixel-circle);
+  --font-pixel-triangle: var(--font-geist-pixel-triangle);
+  --font-pixel-line: var(--font-geist-pixel-line);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);

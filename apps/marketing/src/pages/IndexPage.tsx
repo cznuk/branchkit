@@ -69,7 +69,7 @@ export function IndexPage() {
         <div className="space-y-16 text-sm">
           <div className="flex flex-col gap-0">
             <h1 className="text-xl font-semibold text-foreground tracking-tight">uifork</h1>
-            <p className="text-muted-foreground inline-flex items-center gap-1">
+            <p className="font-pixel-square text-muted-foreground inline-flex items-center gap-1">
               <span className="inline-block">
                 <CyclingContentWheel
                   items={["Structured", "Organized", "Fast", "Embedded", "Deployable"]}
@@ -77,12 +77,10 @@ export function IndexPage() {
                   transitionDuration={500}
                   intervalMs={5000}
                   renderItem={(word: string, distance: number) => (
-                    <div style={{ opacity: 1 - (distance * 3) }}>
-                      {word}
-                    </div>
+                    <div style={{ opacity: 1 - distance * 3 }}>{word}</div>
                   )}
                 />
-                </span>
+              </span>
               iteration for humans and agents.
             </p>
           </div>
