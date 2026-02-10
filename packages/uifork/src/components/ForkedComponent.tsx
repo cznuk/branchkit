@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocalStorage } from "../hooks/useLocalStorage";
 import { registerComponent, unregisterComponent } from "../utils/componentRegistry";
+import { COMPONENT_VERSION_STORAGE_PREFIX } from "./constants";
 import type { ForkedComponentProps } from "../types";
 
 /**
@@ -33,7 +34,7 @@ export function ForkedComponent<T extends Record<string, unknown>>({
   );
 
   const [activeVersion, setActiveVersion] = useLocalStorage<string>(
-    id,
+    `${COMPONENT_VERSION_STORAGE_PREFIX}${id}`,
     initialVersion,
     true, // sync across tabs
   );

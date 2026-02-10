@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { COMPONENT_VERSION_STORAGE_PREFIX } from "../components/constants";
 import type { VersionInfo } from "../types";
 
 interface UseVersionManagementOptions {
@@ -14,8 +15,9 @@ export function useVersionManagement({
   // Extract version keys for validation
   const versionKeys = versions.map((v) => v.key);
 
+  const storageKey = `${COMPONENT_VERSION_STORAGE_PREFIX}${selectedComponent || "uifork-default"}`;
   const [activeVersion, setActiveVersion] = useLocalStorage<string>(
-    selectedComponent || "uifork-default",
+    storageKey,
     "",
     true,
   );
@@ -33,7 +35,7 @@ export function useVersionManagement({
   // Consolidated effect for initialization and pending version check
   useEffect(() => {
     if (selectedComponent && versionKeys.length > 0) {
-      const pendingKey = `${selectedComponent}-pending-version`;
+      const pendingKey = `${COMPONENT_VERSION_STORAGE_PREFIX}${selectedComponent}-pending-version`;
       const pendingVersion = localStorage.getItem(pendingKey);
 
       if (pendingVersion && versionKeys.includes(pendingVersion)) {
@@ -43,7 +45,8 @@ export function useVersionManagement({
         // If no pending version, validate current active version
         // If activeVersion is not in keys, try to restore from LS or default
         if (!versionKeys.includes(activeVersion)) {
-          const savedVersion = localStorage.getItem(selectedComponent);
+          const componentKey = `${COMPONENT_VERSION_STORAGE_PREFIX}${selectedComponent}`;
+          const savedVersion = localStorage.getItem(componentKey);
           const parsedVersion = savedVersion ? JSON.parse(savedVersion) : null;
 
           if (parsedVersion && versionKeys.includes(parsedVersion)) {
@@ -59,7 +62,7 @@ export function useVersionManagement({
   // Store pending version (called after version operations)
   const storePendingVersion = useCallback(
     (version: string) => {
-      const pendingKey = `${selectedComponent}-pending-version`;
+      const pendingKey = `${COMPONENT_VERSION_STORAGE_PREFIX}${selectedComponent}-pending-version`;
       localStorage.setItem(pendingKey, version);
     },
     [selectedComponent],
