@@ -109,6 +109,8 @@ The watch server does two things:
 1. Watches the filesystem for new version files and displays them as options in the UIFork component.
 2. Allows the UIFork component to fork, rename, delete, and create new versions.
 
+**Important:** After generating new version files (e.g., manually or via AI agents), run the watch command to regenerate the corresponding `versions.ts` files. The watch server keeps `versions.ts` in sync with the filesystem.
+
 ---
 
 ## How it works
@@ -181,6 +183,8 @@ The watch server:
 - Keeps `versions.ts` in sync
 - Powers fork/rename/delete/promote actions
 - Enables UI ↔ CLI parity
+
+If you create version files manually or via AI agents, run `npx uifork watch` to regenerate the `versions.ts` files.
 
 This allows versions to be created:
 

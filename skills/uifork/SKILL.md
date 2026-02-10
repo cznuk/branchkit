@@ -150,6 +150,8 @@ npx uifork watch              # Watch current directory
 npx uifork watch ./src        # Watch specific directory
 ```
 
+**Important:** After generating new version files (e.g., manually or via AI agents), run the watch command to regenerate the corresponding `versions.ts` files.
+
 ### `new <component-path> [version-id]`
 
 Create a new empty version file.
@@ -288,3 +290,5 @@ This removes all versioning and makes v2 the main component.
 2. `UIFork` connects to watch server and displays all available versions
 3. Selecting a version updates localStorage, triggering `ForkedComponent` to re-render
 4. Watch server monitors file system for new version files and updates `versions.ts` automatically
+
+**After generating new version files:** When creating version files manually or via AI agents, run `npx uifork watch` to regenerate the `versions.ts` files so the new versions appear in the UIFork widget.
