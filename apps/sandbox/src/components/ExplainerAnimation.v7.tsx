@@ -14,12 +14,12 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 // Browser Frame Component
 function BrowserFrame({
   children,
-  uifork,
+  branchkit,
   cursorRef,
   cursor,
 }: {
   children: React.ReactNode;
-  uifork?: React.ReactNode;
+  branchkit?: React.ReactNode;
   cursorRef?: React.RefObject<HTMLDivElement>;
   cursor?: React.ReactNode;
 }) {
@@ -44,7 +44,7 @@ function BrowserFrame({
       {/* Browser Content */}
       <div className="h-[calc(100%-2rem)] overflow-auto relative">
         {children}
-        {uifork}
+        {branchkit}
         {cursor}
       </div>
     </div>
@@ -217,8 +217,8 @@ function DashboardContent() {
   );
 }
 
-// Mini UIFork Component - Styled to match UIFork but simplified
-function MiniUIFork() {
+// Mini BranchKit Component - Styled to match BranchKit but simplified
+function MiniBranchKit() {
   const [isOpen, setIsOpen] = React.useState(false);
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const [activeVersion, setActiveVersion] = React.useState("v2");
@@ -236,7 +236,7 @@ function MiniUIFork() {
 
   const handleClickOutside = React.useCallback((e: MouseEvent) => {
     const target = e.target as Node;
-    const container = document.querySelector("[data-mini-uifork]");
+    const container = document.querySelector("[data-mini-branchkit]");
     if (container && !container.contains(target)) {
       setIsOpen(false);
     }
@@ -251,7 +251,7 @@ function MiniUIFork() {
 
   return (
     <div
-      data-mini-uifork
+      data-mini-branchkit
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
@@ -422,21 +422,21 @@ function FakeCursor({ containerRef }: { containerRef: React.RefObject<HTMLDivEle
 
     // Wait a bit for layout to settle
     const timeout = setTimeout(() => {
-      // Find the UIFork button
-      const uiforkButton = container.querySelector(
-        "[data-mini-uifork] button",
+      // Find the BranchKit button
+      const branchkitButton = container.querySelector(
+        "[data-mini-branchkit] button",
       ) as HTMLButtonElement;
-      if (!uiforkButton) return;
+      if (!branchkitButton) return;
 
       // Get container dimensions
       const containerRect = container.getBoundingClientRect();
-      const buttonRect = uiforkButton.getBoundingClientRect();
+      const buttonRect = branchkitButton.getBoundingClientRect();
 
       // Calculate start position (middle of container)
       const startX = containerRect.width / 2;
       const startY = containerRect.height / 2;
 
-      // Calculate target position (center of UIFork button)
+      // Calculate target position (center of BranchKit button)
       const targetX = buttonRect.left - containerRect.left + buttonRect.width / 2;
       const targetY = buttonRect.top - containerRect.top + buttonRect.height / 2;
 
@@ -446,7 +446,7 @@ function FakeCursor({ containerRef }: { containerRef: React.RefObject<HTMLDivEle
         y: (startY / containerRect.height) * 100,
       });
 
-      // Animate to UIFork - slower and smoother
+      // Animate to BranchKit - slower and smoother
       const duration = 2500; // 2.5 seconds for slower movement
       let animationFrameId: number;
       const startTime = Date.now();
@@ -474,8 +474,8 @@ function FakeCursor({ containerRef }: { containerRef: React.RefObject<HTMLDivEle
         } else {
           // Arrived at target, click after a brief pause
           setTimeout(() => {
-            // Trigger click on UIFork button
-            uiforkButton.click();
+            // Trigger click on BranchKit button
+            branchkitButton.click();
           }, 200);
         }
       };
@@ -550,12 +550,12 @@ export default function ExplainerAnimation() {
         <div className="h-full relative">
           <BrowserFrame
             cursorRef={browserFrameRef}
-            uifork={
+            branchkit={
               <div
                 className="absolute bottom-4 right-4 z-10 pointer-events-none"
                 style={{ maxWidth: "calc(100% - 2rem)" }}
               >
-                <MiniUIFork onExternalClick={() => {}} />
+                <MiniBranchKit onExternalClick={() => {}} />
               </div>
             }
             cursor={<FakeCursor containerRef={browserFrameRef} />}

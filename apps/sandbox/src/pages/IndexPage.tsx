@@ -40,7 +40,7 @@ export function IndexPage() {
       <div className="min-h-screen p-8 pb-24">
         <div className="max-w-4xl mx-auto space-y-16">
           <header className="flex items-center justify-between">
-            <h1 className="text-sm font-medium text-muted-foreground">uifork</h1>
+            <h1 className="text-sm font-medium text-muted-foreground">branchkit</h1>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

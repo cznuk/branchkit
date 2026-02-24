@@ -32,7 +32,7 @@ type AnimationState = {
     y: number;
     visible: boolean;
   };
-  uifork: {
+  branchkit: {
     isOpen: boolean;
     hoveredVersion: string | null;
     activeVersion: string;
@@ -238,7 +238,7 @@ function useTimeline(
         case "hover":
           setState((s) => ({
             ...s,
-            uifork: { ...s.uifork, hoveredVersion: action.version },
+            branchkit: { ...s.branchkit, hoveredVersion: action.version },
           }));
           break;
 
@@ -277,8 +277,8 @@ function useTimeline(
         case "setState":
           setState((s) => {
             const newState = { ...s };
-            if (action.changes.uifork) {
-              newState.uifork = { ...s.uifork, ...action.changes.uifork };
+            if (action.changes.branchkit) {
+              newState.branchkit = { ...s.branchkit, ...action.changes.branchkit };
             }
             if (action.changes.codeEditor) {
               newState.codeEditor = {
@@ -356,10 +356,10 @@ function useTimeline(
 
 function BrowserFrame({
   children,
-  uifork,
+  branchkit,
 }: {
   children: React.ReactNode;
-  uifork?: React.ReactNode;
+  branchkit?: React.ReactNode;
 }) {
   return (
     <div className="w-full h-[360px] bg-white dark:bg-stone-900 rounded-lg border border-border overflow-hidden shadow-lg relative flex flex-col">
@@ -375,7 +375,7 @@ function BrowserFrame({
       </div>
       <div className="flex-1 min-h-0 overflow-hidden relative">
         {children}
-        {uifork}
+        {branchkit}
       </div>
     </div>
   );
@@ -570,12 +570,12 @@ function DashboardContent({ version }: { version: string }) {
   );
 }
 
-function MiniUIFork({ state }: { state: AnimationState["uifork"] }) {
+function MiniBranchKit({ state }: { state: AnimationState["branchkit"] }) {
   const formatVersionLabel = (version: string) => version.replace(/^v/, "V");
 
   return (
     <div
-      data-uifork
+      data-branchkit
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
@@ -598,7 +598,7 @@ function MiniUIFork({ state }: { state: AnimationState["uifork"] }) {
           {!state.isOpen ? (
             <motion.button
               key="closed"
-              data-uifork-trigger
+              data-branchkit-trigger
               className="flex items-center gap-1.5 px-2 py-1 text-xs text-white dark:text-gray-900 cursor-pointer bg-transparent border-none whitespace-nowrap hover:bg-[rgba(255,255,255,0.1)] dark:hover:bg-gray-100"
               style={{ height: "24px" }}
               layout
@@ -832,7 +832,7 @@ function ReplayButton({ onClick }: { onClick: () => void }) {
 
 const INITIAL_STATE: AnimationState = {
   cursor: { x: 50, y: 50, visible: true },
-  uifork: {
+  branchkit: {
     isOpen: false,
     hoveredVersion: null,
     activeVersion: "v1",
@@ -873,13 +873,13 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   { type: "log", message: "Fork it" },
   { type: "hideText" },
   { type: "showText", text: "Fork it" },
-  { type: "moveTo", target: "[data-uifork-trigger]", duration: 800 },
+  { type: "moveTo", target: "[data-branchkit-trigger]", duration: 800 },
   { type: "wait", duration: 200 },
   { type: "click" },
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v1",
@@ -895,7 +895,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v1",
@@ -982,7 +982,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v2",
@@ -998,7 +998,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v2",
@@ -1018,7 +1018,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v3",
@@ -1041,7 +1041,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v3",
@@ -1066,7 +1066,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v4",
@@ -1092,7 +1092,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v1",
@@ -1110,7 +1110,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v2",
@@ -1128,7 +1128,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v3",
@@ -1146,7 +1146,7 @@ const ANIMATION_TIMELINE: TimelineAction[] = [
   {
     type: "setState",
     changes: {
-      uifork: {
+      branchkit: {
         isOpen: true,
         hoveredVersion: null,
         activeVersion: "v4",
@@ -1204,18 +1204,18 @@ export default function ExplainerAnimation() {
         {/* Right: Browser Frame with Dashboard */}
         <div className="h-full relative flex items-start">
           <BrowserFrame
-            uifork={
+            branchkit={
               <div
                 className="absolute bottom-4 right-4 z-10"
                 style={{ maxWidth: "calc(100% - 2rem)" }}
               >
-                <MiniUIFork state={state.uifork} />
+                <MiniBranchKit state={state.branchkit} />
               </div>
             }
           >
             <div className="bg-stone-50 dark:bg-stone-950 h-full overflow-hidden relative">
               <div className="scale-75 origin-top-left w-[133.33%] h-[133.33%] overflow-hidden">
-                <DashboardContent version={state.uifork.activeVersion} />
+                <DashboardContent version={state.branchkit.activeVersion} />
               </div>
             </div>
           </BrowserFrame>

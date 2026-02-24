@@ -3,11 +3,11 @@ import React from "react";
 /**
  * ExplainerAnimation Component - Narrative Flow
  * 
- * This component demonstrates the UIFork workflow through an animated sequence:
+ * This component demonstrates the BranchKit workflow through an animated sequence:
  * 
- * 1. Mouse moves and opens UIFork UI
+ * 1. Mouse moves and opens BranchKit UI
  *    - Cursor starts in the middle of the browser frame
- *    - Moves smoothly to the UIFork button in the bottom right
+ *    - Moves smoothly to the BranchKit button in the bottom right
  *    - Clicks to open the dropdown
  * 
  * 2. Hovers over v3 and clicks the fork icon button
@@ -19,8 +19,8 @@ import React from "react";
  *    - DashboardContent.v4.tsx appears in the code editor sidebar
  *    - File appears with a smooth animation
  * 
- * 4. Version appears in UIFork versions list
- *    - After a slight delay, v4 appears in the UIFork dropdown versions list
+ * 4. Version appears in BranchKit versions list
+ *    - After a slight delay, v4 appears in the BranchKit dropdown versions list
  *    - Version appears with a smooth animation
  * 
  * 5. Mouse moves to code editor and selects v4 file
@@ -47,11 +47,11 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 // Browser Frame Component
 function BrowserFrame({
   children,
-  uifork,
+  branchkit,
   cursorRef,
 }: {
   children: React.ReactNode;
-  uifork?: React.ReactNode;
+  branchkit?: React.ReactNode;
   cursorRef?: React.RefObject<HTMLDivElement>;
 }) {
   return (
@@ -75,7 +75,7 @@ function BrowserFrame({
       {/* Browser Content */}
       <div className="h-[calc(100%-2rem)] overflow-auto relative">
         {children}
-        {uifork}
+        {branchkit}
       </div>
     </div>
   );
@@ -282,12 +282,12 @@ function DashboardContent() {
 // Animation state type
 type AnimationState = {
   cursorPosition: { x: number; y: number };
-  uiforkOpen: boolean;
+  branchkitOpen: boolean;
   timestamp: number;
 };
 
-// Mini UIFork Component - Styled to match UIFork but simplified
-function MiniUIFork({
+// Mini BranchKit Component - Styled to match BranchKit but simplified
+function MiniBranchKit({
   onStateChange,
   isControlled,
   controlledOpen,
@@ -337,7 +337,7 @@ function MiniUIFork({
 
   const handleClickOutside = React.useCallback((e: MouseEvent) => {
     const target = e.target as Node;
-    const container = document.querySelector("[data-mini-uifork]");
+    const container = document.querySelector("[data-mini-branchkit]");
     if (container && !container.contains(target)) {
       setIsOpen(false);
     }
@@ -352,7 +352,7 @@ function MiniUIFork({
 
   return (
     <div
-      data-mini-uifork
+      data-mini-branchkit
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
@@ -561,8 +561,8 @@ function MiniUIFork({
 // Animation step type
 type AnimationStep =
   | "idle"
-  | "move-to-uifork"
-  | "click-uifork"
+  | "move-to-branchkit"
+  | "click-branchkit"
   | "hover-v3"
   | "click-fork-icon"
   | "wait-for-file"
@@ -595,7 +595,7 @@ function FakeCursor({
 }) {
   const [position, setPosition] = React.useState({ x: 50, y: 50 }); // Start in middle (percentage)
   const cursorRef = React.useRef<HTMLDivElement>(null);
-  const [uiforkOpen, setUiforkOpen] = React.useState(false);
+  const [branchkitOpen, setUiforkOpen] = React.useState(false);
   const [currentStep, setCurrentStep] = React.useState<AnimationStep>("idle");
 
   // Helper function to animate cursor movement
@@ -634,7 +634,7 @@ function FakeCursor({
           setPosition(currentPos);
           onStateChange?.({
             cursorPosition: currentPos,
-            uiforkOpen,
+            branchkitOpen,
             timestamp: Date.now(),
           });
 
@@ -649,7 +649,7 @@ function FakeCursor({
         animationFrameId = requestAnimationFrame(animate);
       });
     },
-    [position, uiforkOpen, onStateChange],
+    [position, branchkitOpen, onStateChange],
   );
 
   // Reset position when replaying
@@ -659,7 +659,7 @@ function FakeCursor({
       setUiforkOpen(false);
       // Small delay to ensure state is reset before starting animation
       setTimeout(() => {
-        setCurrentStep("move-to-uifork");
+        setCurrentStep("move-to-branchkit");
       }, 50);
     } else if (!isPlaying) {
       setCurrentStep("idle");
@@ -667,7 +667,7 @@ function FakeCursor({
   }, [isPlaying, currentStep]);
 
   React.useEffect(() => {
-    if (!isPlaying || currentStep !== "move-to-uifork") return;
+    if (!isPlaying || currentStep !== "move-to-branchkit") return;
 
     const container = containerRef.current;
     const editorContainer = editorContainerRef?.current;
@@ -675,19 +675,19 @@ function FakeCursor({
 
     // Wait for layout to settle
     const timeout = setTimeout(async () => {
-      setCurrentStep("move-to-uifork");
+      setCurrentStep("move-to-branchkit");
 
-      // Step 1: Move to UIFork button and click
+      // Step 1: Move to BranchKit button and click
       const browserContainer = browserContainerRef?.current;
       if (!browserContainer) return;
 
-      const uiforkButton = browserContainer.querySelector(
-        "[data-mini-uifork] button",
+      const branchkitButton = browserContainer.querySelector(
+        "[data-mini-branchkit] button",
       ) as HTMLButtonElement;
-      if (!uiforkButton) return;
+      if (!branchkitButton) return;
 
       const containerRect = container.getBoundingClientRect();
-      const buttonRect = uiforkButton.getBoundingClientRect();
+      const buttonRect = branchkitButton.getBoundingClientRect();
 
       const startX = containerRect.width / 2;
       const startY = containerRect.height / 2;
@@ -701,17 +701,17 @@ function FakeCursor({
 
       await animateTo(targetX, targetY, 2500, containerRect);
 
-      // Step 2: Click UIFork button
-      setCurrentStep("click-uifork");
+      // Step 2: Click BranchKit button
+      setCurrentStep("click-branchkit");
       await new Promise((resolve) => setTimeout(resolve, 200));
-      uiforkButton.click();
+      branchkitButton.click();
       setUiforkOpen(true);
       onStateChange?.({
         cursorPosition: {
           x: (targetX / containerRect.width) * 100,
           y: (targetY / containerRect.height) * 100,
         },
-        uiforkOpen: true,
+        branchkitOpen: true,
         timestamp: Date.now(),
       });
 
@@ -721,7 +721,7 @@ function FakeCursor({
 
       // Find v3 version item
       const v3VersionItem = browserContainer.querySelector(
-        '[data-mini-uifork] [data-key="v3"]',
+        '[data-mini-branchkit] [data-key="v3"]',
       ) as HTMLElement;
       if (v3VersionItem) {
         const v3Rect = v3VersionItem.getBoundingClientRect();
@@ -868,7 +868,7 @@ export default function ExplainerAnimation() {
   const editorContainerRef = React.useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = React.useState(true); // Start playing automatically
   const [animationState, setAnimationState] = React.useState<AnimationState | null>(null);
-  const [uiforkOpen, setUiforkOpen] = React.useState(false);
+  const [branchkitOpen, setUiforkOpen] = React.useState(false);
   const [showV4, setShowV4] = React.useState(false);
   const [hoveredVersion, setHoveredVersion] = React.useState<string | null>(null);
   const [selectedFile, setSelectedFile] = React.useState("DashboardContent.v3.tsx");
@@ -888,7 +888,7 @@ export default function ExplainerAnimation() {
 
   const handleStateChange = React.useCallback((state: AnimationState) => {
     setAnimationState(state);
-    setUiforkOpen(state.uiforkOpen);
+    setUiforkOpen(state.branchkitOpen);
   }, []);
 
   const handleAnimationComplete = React.useCallback(() => {
@@ -920,14 +920,14 @@ export default function ExplainerAnimation() {
         <div className="h-full relative">
           <BrowserFrame
             cursorRef={browserFrameRef}
-            uifork={
+            branchkit={
               <div
                 className="absolute bottom-4 right-4 z-10 pointer-events-none"
                 style={{ maxWidth: "calc(100% - 2rem)" }}
               >
-                <MiniUIFork
+                <MiniBranchKit
                   isControlled={true}
-                  controlledOpen={uiforkOpen}
+                  controlledOpen={branchkitOpen}
                   onStateChange={setUiforkOpen}
                   showV4={showV4}
                   hoveredVersion={hoveredVersion}

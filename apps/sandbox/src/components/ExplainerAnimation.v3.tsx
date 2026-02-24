@@ -12,7 +12,7 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 }
 
 // Browser Frame Component
-function BrowserFrame({ children, uifork }: { children: React.ReactNode; uifork?: React.ReactNode }) {
+function BrowserFrame({ children, branchkit }: { children: React.ReactNode; branchkit?: React.ReactNode }) {
   return (
     <div className="w-full h-full bg-white dark:bg-stone-900 rounded-lg border border-border overflow-hidden shadow-lg relative">
       {/* Browser Header */}
@@ -31,7 +31,7 @@ function BrowserFrame({ children, uifork }: { children: React.ReactNode; uifork?
       {/* Browser Content */}
       <div className="h-[calc(100%-2rem)] overflow-auto relative">
         {children}
-        {uifork}
+        {branchkit}
       </div>
     </div>
   );
@@ -194,8 +194,8 @@ function HomeContent() {
   );
 }
 
-// Mini UIFork Component - Styled to match UIFork but simplified
-function MiniUIFork() {
+// Mini BranchKit Component - Styled to match BranchKit but simplified
+function MiniBranchKit() {
   const [isOpen, setIsOpen] = React.useState(false);
   const [activeVersion, setActiveVersion] = React.useState("v2");
   
@@ -213,7 +213,7 @@ function MiniUIFork() {
 
   const handleClickOutside = React.useCallback((e: MouseEvent) => {
     const target = e.target as Node;
-    const container = document.querySelector('[data-mini-uifork]');
+    const container = document.querySelector('[data-mini-branchkit]');
     if (container && !container.contains(target)) {
       setIsOpen(false);
     }
@@ -228,7 +228,7 @@ function MiniUIFork() {
 
   return (
     <div
-      data-mini-uifork
+      data-mini-branchkit
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
@@ -368,9 +368,9 @@ export default function ExplainerAnimation() {
         {/* Right: Browser Frame with Dashboard */}
         <div className="h-full relative">
           <BrowserFrame
-            uifork={
+            branchkit={
               <div className="absolute bottom-4 right-4 z-10 pointer-events-none" style={{ maxWidth: "calc(100% - 2rem)" }}>
-                <MiniUIFork />
+                <MiniBranchKit />
               </div>
             }
           >

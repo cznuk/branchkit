@@ -114,8 +114,8 @@ export function FakeMessagesLayout(props: FakeMessagesLayoutProps & FakeMessages
     return <Conversation messages={props.messages} hideAvatar={hideAvatar} />;
   }
 
-  const beforeLabel = props.beforeLabel ?? "Before uifork";
-  const afterLabel = props.afterLabel ?? "After uifork";
+  const beforeLabel = props.beforeLabel ?? "Before branchkit";
+  const afterLabel = props.afterLabel ?? "After branchkit";
 
   return (
     <div className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] flex justify-center my-16 px-4">

@@ -398,7 +398,7 @@ export function FakeDevTool2() {
     customElementRef.current = customElement;
 
     // Create shadow root
-    // Using "open" mode so UIFork can detect the fixed-position element inside
+    // Using "open" mode so BranchKit can detect the fixed-position element inside
     const shadowRoot = customElement.attachShadow({ mode: "open" });
 
     // Inject styles into shadow root

@@ -10,7 +10,7 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 }
 
 // Browser Frame Component
-function BrowserFrame({ children, uifork }: { children: React.ReactNode; uifork?: React.ReactNode }) {
+function BrowserFrame({ children, branchkit }: { children: React.ReactNode; branchkit?: React.ReactNode }) {
   return (
     <div className="w-full h-full bg-white dark:bg-stone-900 rounded-lg border border-border overflow-hidden shadow-lg relative">
       {/* Browser Header */}
@@ -29,7 +29,7 @@ function BrowserFrame({ children, uifork }: { children: React.ReactNode; uifork?
       {/* Browser Content */}
       <div className="h-[calc(100%-2rem)] overflow-auto relative">
         {children}
-        {uifork}
+        {branchkit}
       </div>
     </div>
   );
@@ -192,8 +192,8 @@ function HomeContent() {
   );
 }
 
-// Mini UIFork Component - Styled to match UIFork but simplified
-function MiniUIFork() {
+// Mini BranchKit Component - Styled to match BranchKit but simplified
+function MiniBranchKit() {
   return (
     <div
       style={{
@@ -250,9 +250,9 @@ export default function ExplainerAnimation() {
         {/* Right: Browser Frame with Dashboard */}
         <div className="h-full relative">
           <BrowserFrame
-            uifork={
+            branchkit={
               <div className="absolute bottom-4 right-4 z-10 pointer-events-none">
-                <MiniUIFork />
+                <MiniBranchKit />
               </div>
             }
           >

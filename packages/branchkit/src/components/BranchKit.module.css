@@ -1,0 +1,1237 @@
+:global(#branchkit-root) {
+  --branchkit-bg-dark: #262626;
+  --branchkit-bg-hover: #303030;
+  --branchkit-button-hover: #404040;
+  --branchkit-bg-input: #404040;
+  --branchkit-border-color: #2f2f2f;
+  --branchkit-text-primary: white;
+  --branchkit-text-secondary: #a3a3a3;
+  --branchkit-text-muted: #a3a3a3;
+  --branchkit-status-connected: #22c55e;
+  --branchkit-status-connecting: #eab308;
+  --branchkit-status-disconnected: #ef4444;
+  --branchkit-accent-success: #22c55e;
+  --branchkit-accent-danger: #ef4444;
+  --branchkit-accent-delete: #f87171;
+  --branchkit-shadow-sm: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --branchkit-shadow-md: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --branchkit-bg: var(--branchkit-bg-dark);
+  --branchkit-fg: var(--branchkit-text-primary);
+  --branchkit-fg-secondary: var(--branchkit-text-secondary);
+  --branchkit-hover-bg: rgba(255, 255, 255, 0.06);
+  --branchkit-bg-select: rgba(255, 255, 255, 0.06);
+  --branchkit-bg-select-hover: rgba(255, 255, 255, 0.1);
+  --branchkit-menu-item-height: 32px;
+  --branchkit-trigger-height: 32px;
+}
+:global(#branchkit-root[data-theme="light"]) {
+  --branchkit-bg-dark: #ffffff;
+  --branchkit-bg-hover: #f5f5f5;
+  --branchkit-button-hover: #e5e5e5;
+  --branchkit-bg-input: #e5e5e5;
+  --branchkit-border-color: #f0f0f0;
+  --branchkit-text-primary: #171717;
+  --branchkit-text-secondary: #525252;
+  --branchkit-text-muted: #737373;
+  --branchkit-accent-delete: #dc2626;
+  --branchkit-shadow-sm: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --branchkit-shadow-md: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  --branchkit-hover-bg: rgba(0, 0, 0, 0.04);
+  --branchkit-bg-select: rgba(0, 0, 0, 0.04);
+  --branchkit-bg-select-hover: rgba(0, 0, 0, 0.08);
+}
+@media (prefers-color-scheme: light) {
+  :global(#branchkit-root[data-theme="system"]) {
+    --branchkit-bg-dark: #ffffff;
+    --branchkit-bg-hover: #f5f5f5;
+    --branchkit-bg-input: #e5e5e5;
+    --branchkit-border-color: #f0f0f0;
+    --branchkit-text-primary: #171717;
+    --branchkit-text-secondary: #525252;
+    --branchkit-text-muted: #737373;
+    --branchkit-accent-delete: #dc2626;
+    --branchkit-shadow-sm: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --branchkit-shadow-md: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    --branchkit-hover-bg: rgba(0, 0, 0, 0.04);
+    --branchkit-bg-select: rgba(0, 0, 0, 0.04);
+    --branchkit-bg-select-hover: rgba(0, 0, 0, 0.08);
+  }
+}
+
+@keyframes popoverFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+/* Container */
+.container {
+  position: fixed;
+  z-index: 1001;
+  background-color: var(--branchkit-bg-dark);
+  box-shadow: var(--branchkit-shadow-md);
+  border: 1px solid var(--branchkit-border-color);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+}
+
+.container.containerClosed {
+  border-radius: 16px;
+}
+
+/* Override cursor when dragging */
+.container[data-dragging="true"] {
+  cursor: grabbing !important;
+}
+
+.container[data-dragging="true"] * {
+  cursor: grabbing !important;
+}
+
+/* Trigger button */
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  white-space: nowrap;
+  height: var(--branchkit-trigger-height);
+}
+.trigger:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+.trigger.triggerIconOnly {
+  padding: 4px;
+  box-sizing: border-box;
+  width: var(--branchkit-trigger-height);
+  height: var(--branchkit-trigger-height);
+  justify-content: center;
+}
+.trigger.triggerEmpty {
+  padding: 4px;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  justify-content: center;
+}
+
+/* Connection status indicator */
+.statusIndicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.statusIndicatorConnected {
+  background-color: var(--branchkit-status-connected);
+}
+
+.statusIndicatorConnecting {
+  background-color: var(--branchkit-status-connecting);
+}
+
+.statusIndicatorDisconnected {
+  background-color: var(--branchkit-status-disconnected);
+}
+
+.statusIndicatorFailed {
+  background-color: var(--branchkit-status-disconnected);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Common menu item class */
+.menuItem {
+  height: var(--branchkit-menu-item-height);
+  min-height: var(--branchkit-menu-item-height);
+  border-radius: 8px;
+}
+
+/* Trigger separator */
+.triggerSeparator {
+  color: var(--branchkit-fg-secondary);
+  margin: 0 4px;
+}
+
+.triggerLabel,
+.triggerVersion {
+  white-space: nowrap;
+}
+
+.triggerLabel {
+  font-weight: 500;
+}
+
+.triggerVersion {
+  color: var(--branchkit-fg-secondary);
+}
+
+/* Trigger icon */
+.triggerIcon {
+  width: 16px;
+  height: 16px;
+  transition:
+    transform 0.2s,
+    color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.2s;
+  color: var(--branchkit-fg-secondary);
+}
+.triggerIcon.triggerIconOpen {
+  transform: rotate(180deg);
+}
+
+/* Dropdown content */
+.dropdown {
+  width: min(440px, calc(100vw - 24px));
+  min-width: 360px;
+  padding: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Component selector row */
+.componentSelectorRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+/* Component selector button */
+.componentSelector {
+  padding: 8px 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  text-align: left;
+  flex-shrink: 0;
+}
+.componentSelector:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.componentSelectorLabel {
+  font-weight: 500;
+  color: var(--branchkit-fg);
+}
+
+.componentSelectorIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--branchkit-fg-secondary);
+  flex-shrink: 0;
+}
+
+.componentSelectorSettings {
+  padding: 8px;
+  box-sizing: border-box;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--branchkit-fg);
+  transition: background-color 0.15s;
+}
+.componentSelectorSettings:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.componentSelectorSettingsIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Divider */
+.divider {
+  border-top: 1px solid var(--branchkit-border-color);
+  margin: 4px 0;
+}
+
+/* Versions list */
+.versionsList {
+  display: flex;
+  flex-direction: column;
+  max-height: 300px;
+  overflow-y: auto;
+  gap: 2px;
+  /* Custom scrollbar */
+}
+.versionsList::-webkit-scrollbar {
+  width: 4px;
+}
+.versionsList::-webkit-scrollbar-track {
+  background: transparent;
+}
+.versionsList::-webkit-scrollbar-thumb {
+  background: var(--branchkit-border-color);
+  border-radius: 2px;
+}
+
+/* Empty state */
+.emptyState {
+  padding: 8px 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-text-muted);
+}
+
+.emptyStateContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  box-sizing: border-box;
+  gap: 8px;
+  text-align: center;
+}
+
+.emptyStateHeading {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--branchkit-fg);
+  margin: 0;
+}
+
+.emptyStateText {
+  font-size: 13px;
+  color: var(--branchkit-fg-secondary);
+  margin: 0;
+  line-height: 1.4;
+  max-width: 220px;
+  text-wrap: balance;
+}
+
+.inlineCode {
+  font-family: monospace;
+  font-size: 13px;
+  background-color: var(--branchkit-bg-input);
+  padding: 2px 4px;
+  box-sizing: border-box;
+  border-radius: 3px;
+  color: var(--branchkit-fg);
+}
+
+.emptyStateCommandContainer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--branchkit-bg-input);
+  padding: 4px 8px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  margin-top: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.emptyStateCommandContainer:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.emptyStateCommand {
+  font-size: 13px;
+  color: var(--branchkit-fg);
+  margin: 0;
+  font-family: monospace;
+}
+
+.emptyStateCopyIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--branchkit-text-secondary);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.emptyStateCommandContainer:hover .emptyStateCopyIcon {
+  color: var(--branchkit-text-primary);
+}
+
+.inlineStatusMessage {
+  font-size: 12px;
+  color: var(--branchkit-fg-secondary);
+  padding: 6px 10px 2px;
+  box-sizing: border-box;
+}
+
+.toastStack {
+  position: fixed;
+  right: 12px;
+  bottom: 56px;
+  z-index: 1002;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 24px));
+  pointer-events: none;
+}
+
+.toast {
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  font-size: 12px;
+  line-height: 1.35;
+  border: 1px solid var(--branchkit-border-color);
+  background: color-mix(in srgb, var(--branchkit-bg-dark) 88%, black);
+  color: var(--branchkit-fg);
+  box-shadow: var(--branchkit-shadow-sm);
+  animation: popoverFadeIn 0.14s ease-out;
+}
+
+.toastSuccess {
+  border-color: color-mix(in srgb, var(--branchkit-status-connected) 40%, var(--branchkit-border-color));
+}
+
+.toastError {
+  border-color: color-mix(in srgb, var(--branchkit-status-disconnected) 55%, var(--branchkit-border-color));
+}
+
+.toastInfo {
+  border-color: color-mix(in srgb, var(--branchkit-text-secondary) 45%, var(--branchkit-border-color));
+}
+
+/* Version item */
+.versionItem {
+  padding: 8px 4px 8px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.versionItem:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+.versionItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.versionItem:hover .actions {
+  opacity: 1;
+}
+
+/* Version item checkmark container */
+.checkmarkContainer {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkmarkIcon {
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+}
+
+/* Version label */
+.versionLabel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.versionId {
+  color: var(--branchkit-fg);
+}
+
+.versionLabelText {
+  opacity: 0.5;
+}
+
+/* Editing state - matches versionItem layout */
+.versionItemEditing {
+  padding: 8px 4px 8px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: var(--branchkit-hover-bg);
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Rename input */
+.renameInput {
+  flex: 1;
+  background-color: transparent;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  border: none;
+  outline: none;
+}
+.renameInput::placeholder {
+  color: var(--branchkit-text-muted);
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.actionButton {
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--branchkit-fg);
+  transition: background-color 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(var(--branchkit-menu-item-height) - 8px);
+  width: calc(var(--branchkit-menu-item-height) - 8px);
+}
+.actionButton:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.actionIcon {
+  width: 14px;
+  height: 14px;
+  color: var(--branchkit-fg-secondary);
+  transition: color 0.15s;
+}
+.actionButton:hover .actionIcon {
+  color: var(--branchkit-fg);
+}
+
+/* Disabled state for buttons and actions when offline */
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.actionButtonMore {
+  position: relative;
+}
+
+/* Popover menu */
+.popover {
+  position: fixed;
+  z-index: 1002;
+  min-width: 140px;
+  border-radius: 12px;
+  background-color: var(--branchkit-bg-dark);
+  box-shadow: var(--branchkit-shadow-md);
+  border: 1px solid var(--branchkit-border-color);
+  padding: 4px;
+  box-sizing: border-box;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+  transform-origin: left center;
+  animation: popoverFadeIn 0.2s cubic-bezier(0.04, 1.02, 0.13, 1.02);
+}
+
+/* Popover menu item */
+.popoverMenuItem {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 4px 8px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.popoverMenuItem:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+.popoverMenuItem.popoverMenuItemDelete {
+  color: var(--branchkit-accent-delete);
+}
+
+.popoverMenuItemIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--branchkit-fg-secondary);
+  flex-shrink: 0;
+}
+.popoverMenuItem.popoverMenuItemDelete .popoverMenuItemIcon {
+  color: var(--branchkit-accent-delete);
+}
+
+/* Confirm/Cancel buttons */
+.confirmButton {
+  padding: 4px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.confirmIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--branchkit-accent-success);
+}
+
+.cancelIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--branchkit-accent-danger);
+}
+
+/* New version button */
+.newVersionButton {
+  padding: 8px 4px 8px 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.newVersionButton:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+.newVersionButton {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  color: var(--branchkit-fg);
+}
+.newVersionButton:hover {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.newVersionIconContainer {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.newVersionIcon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Component selector dropdown */
+.componentSelectorDropdown {
+  position: fixed;
+  z-index: 1002;
+  width: max-content;
+  min-width: 220px;
+  border-radius: 12px;
+  background-color: var(--branchkit-bg-dark);
+  box-shadow: var(--branchkit-shadow-md);
+  border: 1px solid var(--branchkit-border-color);
+  padding: 4px;
+  box-sizing: border-box;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+  transform-origin: right center;
+  animation: popoverFadeIn 0.2s cubic-bezier(0.04, 1.02, 0.13, 1.02);
+}
+
+/* Component selector item */
+.componentSelectorItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.componentSelectorItem:hover,
+.componentSelectorItem.componentSelectorItemSelected {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.componentSelectorItemCheckmarkContainer {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.componentSelectorItemCheckmark {
+  width: 16px;
+  height: 16px;
+}
+
+.componentSelectorItemName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.componentSelectorItemCount {
+  margin-left: auto;
+  color: var(--branchkit-text-muted);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.componentSelectorDropdownTitle {
+  font-size: 12px;
+  color: var(--branchkit-text-muted);
+  margin-bottom: 4px;
+  padding-left: 4px;
+  box-sizing: border-box;
+  font-weight: 500;
+}
+
+.componentSelectorDropdownHint {
+  font-size: 11px;
+  color: var(--branchkit-text-muted);
+  padding: 6px 6px 4px;
+  box-sizing: border-box;
+  line-height: 1.4;
+  max-width: 230px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.componentSelectorDropdownHintIcon {
+  flex-shrink: 0;
+  color: var(--branchkit-text-muted);
+  margin-top: 1px;
+}
+
+.componentSelectorDropdownHintCode {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 10px;
+  background: var(--branchkit-bg-hover);
+  color: var(--branchkit-fg);
+  padding: 2px 5px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+/* Settings view */
+.settingsView {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.settingsBackButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  z-index: 1;
+}
+
+.settingsBackButton::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -10px;
+  bottom: -6px;
+  background-color: transparent;
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  z-index: -1;
+}
+
+.settingsBackButton:hover::before {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.settingsBackIcon {
+  width: 16px;
+  height: 16px;
+  transform: rotate(180deg);
+  margin-left: -2px;
+}
+
+.settingsContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsTitle {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--branchkit-fg);
+  margin: 0 0 8px 0;
+}
+
+.settingsText {
+  font-size: 14px;
+  color: var(--branchkit-fg-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.settingsGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settingsLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--branchkit-fg);
+  white-space: nowrap;
+  width: 100px;
+  text-align: left;
+  flex-shrink: 0;
+}
+
+.settingsSelect {
+  flex: 1;
+  padding: 0 12px;
+  box-sizing: border-box;
+  height: var(--branchkit-trigger-height);
+  font-size: 14px;
+  color: var(--branchkit-fg);
+  background-color: var(--branchkit-bg-select);
+  border: 1px solid var(--branchkit-border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23a3a3a3' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 30px;
+  text-align: left;
+}
+.settingsSelect:hover {
+  background-color: var(--branchkit-bg-select-hover);
+  border-color: var(--branchkit-border-color);
+}
+.settingsSelect:focus {
+  border-color: var(--branchkit-border-color);
+  background-color: var(--branchkit-bg-select-hover);
+  outline: 2px solid var(--branchkit-border-color);
+  outline-offset: 2px;
+}
+.settingsSelect option {
+  background-color: var(--branchkit-bg-dark);
+  color: var(--branchkit-fg);
+}
+
+.settingsCheckboxGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.settingsCheckboxLabel {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  width: 100%;
+  cursor: pointer;
+  align-items: flex-start;
+}
+
+.settingsCheckboxInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.settingsCheckboxVisual {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 1.5px solid var(--branchkit-border-color);
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.settingsCheckboxVisualChecked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.settingsCheckboxContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+}
+
+.settingsCheckboxLabelText {
+  width: auto;
+  margin: 0;
+  font-size: 14px;
+}
+
+.settingsCheckboxDescription {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* Tooltip */
+.tooltip {
+  position: fixed;
+  z-index: 1003;
+  padding: 2px 6px;
+  box-sizing: border-box;
+  font-size: 12px;
+  color: var(--branchkit-text-primary);
+  background-color: var(--branchkit-bg-dark);
+  border: 1px solid var(--branchkit-border-color);
+  border-radius: 6px;
+  box-shadow: var(--branchkit-shadow-md);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.15s ease-in-out;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
+}
+
+.tooltipVisible {
+  opacity: 1;
+}
+
+.offlineMessageCommandButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+  transition: opacity 0.15s;
+}
+
+.offlineMessageCommandButton:hover {
+  opacity: 0.8;
+}
+
+.offlineMessageCopyIcon {
+  width: 12px;
+  height: 12px;
+  color: var(--branchkit-text-muted);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.offlineMessageCommandButton:hover .offlineMessageCopyIcon {
+  color: var(--branchkit-text-primary);
+}
+
+.annotationPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  min-width: 360px;
+}
+
+.annotationPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.annotationActionButton {
+  flex: 1;
+  border: 1px solid var(--branchkit-border-color);
+  background-color: transparent;
+  color: var(--branchkit-fg);
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.annotationActionButton:hover:not(:disabled) {
+  background-color: var(--branchkit-hover-bg);
+}
+
+.annotationActionButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.annotationPrimaryButton {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--branchkit-status-connected) 55%, transparent);
+  background: color-mix(in srgb, var(--branchkit-status-connected) 15%, transparent);
+  color: var(--branchkit-fg);
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.annotationPrimaryButton:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--branchkit-status-connected) 25%, transparent);
+}
+
+.annotationPrimaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.annotationActionButtonActive {
+  border-color: var(--branchkit-status-connected);
+  color: var(--branchkit-status-connected);
+}
+
+.annotationGlobalPrompt,
+.annotationNote {
+  border: 1px solid var(--branchkit-border-color);
+  background-color: var(--branchkit-bg-input);
+  color: var(--branchkit-fg);
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 12px;
+  resize: vertical;
+  min-height: 52px;
+}
+
+.annotationGlobalPrompt::placeholder,
+.annotationNote::placeholder {
+  color: var(--branchkit-text-muted);
+}
+
+.annotationSummary {
+  font-size: 12px;
+  color: var(--branchkit-fg-secondary);
+}
+
+.annotationList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.annotationItem {
+  border: 1px solid var(--branchkit-border-color);
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.annotationItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.annotationItemTarget {
+  font-size: 12px;
+  color: var(--branchkit-fg);
+  font-weight: 600;
+}
+
+.annotationItemMeta {
+  font-size: 11px;
+  color: var(--branchkit-fg-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.annotationItemMeta code {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.annotationRemoveButton,
+.annotationClearButton {
+  border: none;
+  background: transparent;
+  color: var(--branchkit-accent-delete);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.annotationRemoveButton:hover,
+.annotationClearButton:hover {
+  opacity: 0.8;
+}
+
+.annotationClearButtonTop {
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--branchkit-accent-delete) 45%, transparent);
+  background: color-mix(in srgb, var(--branchkit-accent-delete) 10%, transparent);
+  color: var(--branchkit-accent-delete);
+  height: 30px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.annotationClearButtonTop:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--branchkit-accent-delete) 18%, transparent);
+}
+
+.annotationClearButtonTop:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.annotationEmpty {
+  font-size: 12px;
+  color: var(--branchkit-fg-secondary);
+  border: 1px dashed var(--branchkit-border-color);
+  border-radius: 8px;
+  padding: 10px;
+  box-sizing: border-box;
+}

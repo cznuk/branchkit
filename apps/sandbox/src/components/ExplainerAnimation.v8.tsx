@@ -14,12 +14,12 @@ function Card({ children, className = "" }: { children: React.ReactNode; classNa
 // Browser Frame Component
 function BrowserFrame({
   children,
-  uifork,
+  branchkit,
   cursorRef,
   cursor,
 }: {
   children: React.ReactNode;
-  uifork?: React.ReactNode;
+  branchkit?: React.ReactNode;
   cursorRef?: React.RefObject<HTMLDivElement>;
   cursor?: React.ReactNode;
 }) {
@@ -44,7 +44,7 @@ function BrowserFrame({
       {/* Browser Content */}
       <div className="h-[calc(100%-2rem)] overflow-auto relative">
         {children}
-        {uifork}
+        {branchkit}
         {cursor}
       </div>
     </div>
@@ -220,12 +220,12 @@ function DashboardContent() {
 // Animation state type
 type AnimationState = {
   cursorPosition: { x: number; y: number };
-  uiforkOpen: boolean;
+  branchkitOpen: boolean;
   timestamp: number;
 };
 
-// Mini UIFork Component - Styled to match UIFork but simplified
-function MiniUIFork({
+// Mini BranchKit Component - Styled to match BranchKit but simplified
+function MiniBranchKit({
   onStateChange,
   isControlled,
   controlledOpen,
@@ -261,7 +261,7 @@ function MiniUIFork({
 
   const handleClickOutside = React.useCallback((e: MouseEvent) => {
     const target = e.target as Node;
-    const container = document.querySelector("[data-mini-uifork]");
+    const container = document.querySelector("[data-mini-branchkit]");
     if (container && !container.contains(target)) {
       setIsOpen(false);
     }
@@ -276,7 +276,7 @@ function MiniUIFork({
 
   return (
     <div
-      data-mini-uifork
+      data-mini-branchkit
       style={{
         fontFamily:
           "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif",
@@ -450,7 +450,7 @@ function FakeCursor({
 }) {
   const [position, setPosition] = React.useState({ x: 50, y: 50 }); // Start in middle (percentage)
   const cursorRef = React.useRef<HTMLDivElement>(null);
-  const [uiforkOpen, setUiforkOpen] = React.useState(false);
+  const [branchkitOpen, setUiforkOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (!isPlaying) return;
@@ -460,21 +460,21 @@ function FakeCursor({
 
     // Wait a bit for layout to settle
     const timeout = setTimeout(() => {
-      // Find the UIFork button
-      const uiforkButton = container.querySelector(
-        "[data-mini-uifork] button",
+      // Find the BranchKit button
+      const branchkitButton = container.querySelector(
+        "[data-mini-branchkit] button",
       ) as HTMLButtonElement;
-      if (!uiforkButton) return;
+      if (!branchkitButton) return;
 
       // Get container dimensions
       const containerRect = container.getBoundingClientRect();
-      const buttonRect = uiforkButton.getBoundingClientRect();
+      const buttonRect = branchkitButton.getBoundingClientRect();
 
       // Calculate start position (middle of container)
       const startX = containerRect.width / 2;
       const startY = containerRect.height / 2;
 
-      // Calculate target position (center of UIFork button)
+      // Calculate target position (center of BranchKit button)
       const targetX = buttonRect.left - containerRect.left + buttonRect.width / 2;
       const targetY = buttonRect.top - containerRect.top + buttonRect.height / 2;
 
@@ -488,11 +488,11 @@ function FakeCursor({
       // Report initial state
       onStateChange?.({
         cursorPosition: initialPos,
-        uiforkOpen: false,
+        branchkitOpen: false,
         timestamp: Date.now(),
       });
 
-      // Animate to UIFork - slower and smoother
+      // Animate to BranchKit - slower and smoother
       const duration = 1200; // 1.2 seconds for quicker movement
       let animationFrameId: number;
       const startTime = Date.now();
@@ -520,7 +520,7 @@ function FakeCursor({
         // Report state during animation
         onStateChange?.({
           cursorPosition: currentPos,
-          uiforkOpen: false,
+          branchkitOpen: false,
           timestamp: Date.now(),
         });
 
@@ -529,8 +529,8 @@ function FakeCursor({
         } else {
           // Arrived at target, click after a brief pause
           setTimeout(() => {
-            // Trigger click on UIFork button
-            uiforkButton.click();
+            // Trigger click on BranchKit button
+            branchkitButton.click();
             setUiforkOpen(true);
             // Report state after click
             onStateChange?.({
@@ -538,7 +538,7 @@ function FakeCursor({
                 x: (targetX / containerRect.width) * 100,
                 y: (targetY / containerRect.height) * 100,
               },
-              uiforkOpen: true,
+              branchkitOpen: true,
               timestamp: Date.now(),
             });
             onComplete?.();
@@ -627,7 +627,7 @@ export default function ExplainerAnimation() {
   const browserFrameRef = React.useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = React.useState(true); // Start playing automatically
   const [animationState, setAnimationState] = React.useState<AnimationState | null>(null);
-  const [uiforkOpen, setUiforkOpen] = React.useState(false);
+  const [branchkitOpen, setUiforkOpen] = React.useState(false);
 
   const handleReplay = React.useCallback(() => {
     setIsPlaying(false);
@@ -641,7 +641,7 @@ export default function ExplainerAnimation() {
 
   const handleStateChange = React.useCallback((state: AnimationState) => {
     setAnimationState(state);
-    setUiforkOpen(state.uiforkOpen);
+    setUiforkOpen(state.branchkitOpen);
   }, []);
 
   const handleAnimationComplete = React.useCallback(() => {
@@ -660,14 +660,14 @@ export default function ExplainerAnimation() {
         <div className="h-full relative">
           <BrowserFrame
             cursorRef={browserFrameRef}
-            uifork={
+            branchkit={
               <div
                 className="absolute bottom-4 right-4 z-10 pointer-events-none"
                 style={{ maxWidth: "calc(100% - 2rem)" }}
               >
-                <MiniUIFork
+                <MiniBranchKit
                   isControlled={true}
-                  controlledOpen={uiforkOpen}
+                  controlledOpen={branchkitOpen}
                   onStateChange={setUiforkOpen}
                 />
               </div>

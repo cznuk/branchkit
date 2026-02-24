@@ -16,7 +16,7 @@ export function IndexPage() {
 
         <div className="text-sm">
           <div className="mb-16 flex flex-col gap-0">
-            <h1 className="text-lg font-semibold text-foreground tracking-tight">uifork</h1>
+            <h1 className="text-lg font-semibold text-foreground tracking-tight">branchkit</h1>
             <p className="font-pixel-square text-muted-foreground inline-flex items-center gap-1.5">
               <span className="inline-block">
                 <CyclingContentWheel
@@ -50,7 +50,7 @@ export function IndexPage() {
         </section>
 
         <section>
-          <h2 className={`${headingClassName} mb-4`}>Introducing UIFork</h2>
+          <h2 className={`${headingClassName} mb-4`}>Introducing BranchKit</h2>
           <p className="mb-4 text-lg font-medium text-foreground">
             Structured UI iteration for agents and humans.
           </p>

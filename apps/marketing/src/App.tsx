@@ -1,13 +1,13 @@
-import { UIFork } from "uifork";
+import { BranchKit } from "branchkit";
 import { IndexPage } from "./pages/IndexPage";
 
-const showUIFork = import.meta.env.MODE !== "production";
+const showBranchKit = import.meta.env.MODE !== "production";
 
 function App() {
   return (
     <>
       <IndexPage />
-      {showUIFork && <UIFork />}
+      {showBranchKit && <BranchKit />}
     </>
   );
 }

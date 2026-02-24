@@ -1,6 +1,6 @@
-# UIFork Marketing
+# BranchKit Marketing
 
-Local development environment for testing UIFork components (marketing app).
+Local development environment for testing BranchKit components (marketing app).
 
 ## Setup
 
@@ -20,21 +20,21 @@ cd apps/marketing && npm install
 
 ### Mode 1: Local Development with HMR (`dev:local`)
 
-For actively developing the uifork package with hot module replacement. Changes to the package source will be reflected immediately.
+For actively developing the branchkit package with hot module replacement. Changes to the package source will be reflected immediately.
 
 ```bash
 npm run dev:local
 ```
 
-This uses a Vite alias to point directly to `packages/uifork/src`, enabling full HMR when editing the package.
+This uses a Vite alias to point directly to `packages/branchkit/src`, enabling full HMR when editing the package.
 
 ### Mode 2: Built Package Testing (`dev`)
 
 For testing against the built workspace package (simulates how consumers will use it):
 
 ```bash
-# Build the uifork package first
-cd ../../packages/uifork && npm run build
+# Build the branchkit package first
+cd ../../packages/branchkit && npm run build
 
 # Then run marketing
 cd ../../apps/marketing && npm run dev
@@ -44,28 +44,28 @@ cd ../../apps/marketing && npm run dev
 
 For testing against an actual npm-published version:
 
-1. Change `package.json`: `"uifork": "^x.x.x"` (replace `*` with version)
+1. Change `package.json`: `"branchkit": "^x.x.x"` (replace `*` with version)
 2. Run `npm install`
 3. Run `npm run build && npm run preview`
 
-## How UIFork is Used
+## How BranchKit is Used
 
 The marketing app uses the component-first approach:
 
 ```tsx
-import { UIFork } from "uifork";
+import { BranchKit } from "branchkit";
 
 function App() {
   return (
     <>
       <YourApp />
-      {import.meta.env.MODE !== "production" && <UIFork />}
+      {import.meta.env.MODE !== "production" && <BranchKit />}
     </>
   );
 }
 ```
 
-This shows UIFork in both local development and preview/staging builds, but hides it in production. No separate CSS import is needed - styles are automatically injected.
+This shows BranchKit in both local development and preview/staging builds, but hides it in production. No separate CSS import is needed - styles are automatically injected.
 
 ## Summary
 
