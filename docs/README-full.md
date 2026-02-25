@@ -19,7 +19,7 @@ BranchKit is a dev tool for exploring UI ideas directly inside your React app.
 Install the package:
 
 ```tsx
-npm install branchkit
+npm install @cznuk/branchkit
 ```
 
 Continue installation:
@@ -61,7 +61,7 @@ Note: even if installing manually, the [agent skill](#using-agents--skills) is s
 Add the component anywhere in your React app, ideally at the root level. For framework-specific examples, see the [framework examples](#framework-examples) below.
 
 ```tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 const showBranchKit = process.env.NODE_ENV !== "production";
 
@@ -365,7 +365,7 @@ Not intended for:
 
 ```tsx
 // src/App.tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 const showBranchKit = import.meta.env.MODE !== "production";
 
@@ -384,7 +384,7 @@ function App() {
 ```tsx
 // components/BranchKitProvider.tsx
 "use client";
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 export function BranchKitProvider() {
   return <BranchKit />;
@@ -397,7 +397,7 @@ export function BranchKitProvider() {
 
 ```tsx
 // pages/_app.tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 export default function App({ Component, pageProps }) {
   return (

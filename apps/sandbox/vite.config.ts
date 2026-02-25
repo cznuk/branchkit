@@ -13,7 +13,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       // When developing the branchkit package, alias to source for HMR
       ...(useLocalSource && {
-        branchkit: path.resolve(__dirname, "../../packages/branchkit/src"),
+        "@cznuk/branchkit": path.resolve(__dirname, "../../packages/branchkit/src"),
       }),
     },
   },

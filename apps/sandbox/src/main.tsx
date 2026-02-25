@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { ThemeProvider } from "./components/theme-provider";
 import "./index.css";
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 import { makeAnimationDelay } from "./lib/utils";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

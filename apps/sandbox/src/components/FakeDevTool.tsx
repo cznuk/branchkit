@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useDragControls } from "motion/react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
-import { useLocalStorage } from "branchkit";
+import { useLocalStorage } from "/branchkit";
 import { IconX } from "@tabler/icons-react";
 
 type Position = "top-left" | "top-right" | "bottom-left" | "bottom-right";

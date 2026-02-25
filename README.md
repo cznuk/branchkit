@@ -18,13 +18,13 @@ Built on top of UIFork (MIT-licensed), with substantial changes and a page-first
 ### 1. Install
 
 ```bash
-npm install branchkit
+npm install @cznuk/branchkit
 ```
 
 ### 2. Add `<BranchKit />` to your app (dev only)
 
 ```tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 function App() {
   return (
@@ -126,7 +126,7 @@ npx branchkit watch --port 3002
 ### Vite
 
 ```tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 function App() {
   return (
@@ -143,7 +143,7 @@ function App() {
 ```tsx
 // components/BranchKitProvider.tsx
 "use client";
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 export function BranchKitProvider() {
   return <BranchKit />;

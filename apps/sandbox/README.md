@@ -53,7 +53,7 @@ For testing against an actual npm-published version:
 The sandbox uses the component-first approach:
 
 ```tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 function App() {
   return (

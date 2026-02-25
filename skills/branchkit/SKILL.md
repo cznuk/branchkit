@@ -17,7 +17,7 @@ BranchKit is a CLI tool and React component library for managing UI component ve
 ## Installation
 
 ```bash
-npm install branchkit
+npm install @cznuk/branchkit
 ```
 
 Or use yarn, pnpm, or bun.
@@ -31,7 +31,7 @@ Add the `BranchKit` component to your React app root. Typically shown in develop
 **Vite:**
 
 ```tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 const showBranchKit = import.meta.env.MODE !== "production";
 
@@ -50,7 +50,7 @@ function App() {
 ```tsx
 // components/BranchKitProvider.tsx
 "use client";
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 export function BranchKitProvider() {
   if (process.env.NODE_ENV === "production") return null;
@@ -76,7 +76,7 @@ export default function RootLayout({ children }) {
 
 ```tsx
 // pages/_app.tsx
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 
 export default function App({ Component, pageProps }) {
   return (
@@ -264,7 +264,7 @@ Useful for:
 
 ### Starting Versioning on a Component
 
-1. Install branchkit: `npm install branchkit`
+1. Install branchkit: `npm install @cznuk/branchkit`
 2. Add `<BranchKit />` component to app root
 3. Initialize: `npx branchkit src/components/MyComponent.tsx` (or `npx branchkit init src/components/MyComponent.tsx`)
 4. Start watch server: `npx branchkit watch`

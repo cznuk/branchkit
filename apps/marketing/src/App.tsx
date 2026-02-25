@@ -1,4 +1,4 @@
-import { BranchKit } from "branchkit";
+import { BranchKit } from "@cznuk/branchkit";
 import { IndexPage } from "./pages/IndexPage";
 
 const showBranchKit = import.meta.env.MODE !== "production";

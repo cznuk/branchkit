@@ -1,5 +1,5 @@
 {
-  "name": "branchkit",
+  "name": "@cznuk/branchkit",
   "version": "0.0.10",
   "description": "CLI tool and React components for managing UI component versions and switching between them",
   "keywords": [
