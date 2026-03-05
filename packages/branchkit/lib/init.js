@@ -21,8 +21,8 @@ class UISwitcherScaffold {
     this.versionsFile = path.join(this.parentDir, `${this.componentName}.versions.ts`);
     this.targetId = getTargetIdFromPath(this.originalFilePath, process.cwd());
 
-    console.log(`Scaffolding forked component from: ${this.originalFilePath}`);
-    console.log(`Component name: ${this.componentName}`);
+    console.log(`Scaffolding forked page/component from: ${this.originalFilePath}`);
+    console.log(`Target name: ${this.componentName}`);
     console.log(`Target directory: ${this.parentDir}`);
     console.log(`Target id: ${this.targetId}`);
   }
@@ -92,31 +92,20 @@ export { VERSIONS }
     this.createWrapper();
 
     console.log("\n✅ Scaffolding complete!");
-    console.log("\nFor now, each version file must default-export its component.");
-    console.log("   Named exports are something we're considering for the future.");
+    console.log("\nVersion files must default-export their component.");
     console.log("\nNext steps:");
     console.log(
-      `1. Your original component is now ${this.componentName}.v1${this.originalExtension}`,
+      `1. Your original page/component is now ${this.componentName}.v1${this.originalExtension}`,
     );
-    console.log(`2. BranchKit will auto-initialize if you've set it up in your HTML.`);
-    console.log(`   For Vite, add to your index.html <head>:`);
-    console.log(`
-   <script type="module">
-     if (import.meta.env.DEV) {
-       import("@cznuk/branchkit/auto-init");
-     }
-   </script>
-`);
-    console.log(`   Or manually add <BranchKit /> to your app root (only in development):`);
+    console.log(`2. Add <BranchKit /> to your app root (development only):`);
     console.log(`
    import { BranchKit } from "@cznuk/branchkit"
-   import "@cznuk/branchkit/style.css"
    
    function App() {
      return (
        <>
          <YourApp />
-         {process.env.NODE_ENV === "development" && <BranchKit />}
+         {import.meta.env.DEV && <BranchKit />}
        </>
      )
    }

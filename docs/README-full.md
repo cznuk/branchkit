@@ -3,23 +3,25 @@
 BranchKit is a dev tool for exploring UI ideas directly inside your React app.
 
 - **Instant switching:** Flip between variations quickly. No reloads, no interrupting your flow.
-
 - **In-context comparison:** Same app, state, props, and edge cases.
-
 - **Embedded prototyping:** Explore ideas directly inside your own codebase.
-
 - **Multi-variant deploys:** Deploy to one URL. Gather feedback on many ideas.
-
 - **AI-friendly by design:** Versions are separate files so it's easy to generate alternatives or prompt a forked version.
 
 ---
 
 ## Getting started
 
-Install the package:
+Use the root README for the fastest setup path. This document is the longer reference.
 
-```tsx
-npm install @cznuk/branchkit
+Install the package from this repo for now:
+
+```bash
+# If you are working inside this monorepo
+npm install
+
+# If you are adding BranchKit to another React app
+npm install /absolute/path/to/BranchKit/packages/branchkit
 ```
 
 Continue installation:
@@ -63,7 +65,7 @@ Add the component anywhere in your React app, ideally at the root level. For fra
 ```tsx
 import { BranchKit } from "@cznuk/branchkit";
 
-const showBranchKit = process.env.NODE_ENV !== "production";
+const showBranchKit = import.meta.env.DEV;
 
 function App() {
   return (
@@ -86,8 +88,7 @@ This will:
 - Convert your component into a forked component that can be versioned
 - Generate a `versions.ts` file to track all versions
 
-**Note:** For now, each version file must default-export its component. Named exports are
-being considered for the future.
+**Note:** Each version file must default-export its component.
 
 **3. Use your component as usual**
 
