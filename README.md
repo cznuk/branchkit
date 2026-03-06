@@ -16,14 +16,10 @@ Built on top of UIFork (MIT-licensed), with substantial changes and a page-first
 
 ### 1. Install
 
-`@cznuk/branchkit` is not published yet. For now, install it from this repo.
+Install BranchKit from npm.
 
 ```bash
-# If you are working inside this monorepo
-npm install
-
-# If you are adding BranchKit to another React app
-npm install /absolute/path/to/BranchKit/packages/branchkit
+npm install @cznuk/branchkit
 ```
 
 ### 2. Mount `<BranchKit />` once

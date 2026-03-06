@@ -14,14 +14,10 @@ BranchKit is a dev tool for exploring UI ideas directly inside your React app.
 
 Use the root README for the fastest setup path. This document is the longer reference.
 
-Install the package from this repo for now:
+Install the package from npm:
 
 ```bash
-# If you are working inside this monorepo
-npm install
-
-# If you are adding BranchKit to another React app
-npm install /absolute/path/to/BranchKit/packages/branchkit
+npm install @cznuk/branchkit
 ```
 
 Continue installation:
