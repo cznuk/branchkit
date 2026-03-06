@@ -24,7 +24,15 @@ npm install @cznuk/branchkit
 
 ### 2. Mount `<BranchKit />` once
 
-Add it near your app root and render it only in development.
+Mount it once in the top-level React component that already wraps your app. Do not add it to every page.
+
+In most apps, this is one of these files:
+
+- `src/App.tsx`
+- `app/layout.tsx` in Next.js
+- Your shared app shell or layout component
+
+You only need this one import and one rendered component:
 
 ```tsx
 import { BranchKit } from "@cznuk/branchkit";
@@ -39,23 +47,37 @@ function AppShell() {
 }
 ```
 
-If you are not using Vite, use your framework's normal dev-only check.
+That is it. You do not need to add BranchKit to each page file.
+
+If you are not using Vite, keep the same pattern and swap in your framework's normal dev-only check.
 
 ### 3. Initialize one page
 
-Start with the page you are actually rendering on the route you want to test.
+Then run `init` against the page file you want to experiment on.
 
 ```bash
 npx branchkit init src/pages/LandingPage.tsx
 ```
 
-`init` only changes that target:
+That command only changes that one file:
 
 - Renames the original file to `LandingPage.v1.tsx`
 - Creates `LandingPage.versions.ts`
 - Creates a wrapper `LandingPage.tsx` that renders the active version
 
 Version files must default-export their component.
+
+If you want multiple specific pages, pass them explicitly:
+
+```bash
+npx branchkit init --paths src/pages/HomePage.tsx --paths src/pages/PricingPage.tsx
+```
+
+If you want a batch of pages by pattern, use globs:
+
+```bash
+npx branchkit init --targets "src/pages/**/*.tsx"
+```
 
 ### 4. Start the watch server
 

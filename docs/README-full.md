@@ -56,7 +56,13 @@ Note: even if installing manually, the [agent skill](#using-agents--skills) is s
 
 **2. Add BranchKit to your project**
 
-Add the component anywhere in your React app, ideally at the root level. For framework-specific examples, see the [framework examples](#framework-examples) below.
+Mount BranchKit once in the top-level React component that already wraps your app. Do not add it to every page.
+
+Common places:
+
+- `src/App.tsx`
+- `app/layout.tsx` in Next.js
+- Your shared app shell or layout component
 
 ```tsx
 import { BranchKit } from "@cznuk/branchkit";
@@ -73,16 +79,34 @@ function App() {
 }
 ```
 
+That is the only place you need to render it.
+
 **2. Initialize a component for versioning**
 
+Run `init` against the page or component file you want to version:
+
 ```bash
-npx branchkit {path/to/component}
+npx branchkit src/pages/LandingPage.tsx
+# or
+npx branchkit init src/pages/LandingPage.tsx
 ```
 
 This will:
 
-- Convert your component into a forked component that can be versioned
+- Convert that target into a forked target that can be versioned
 - Generate a `versions.ts` file to track all versions
+
+To initialize multiple specific files:
+
+```bash
+npx branchkit init --paths src/pages/HomePage.tsx --paths src/pages/PricingPage.tsx
+```
+
+To initialize many files by pattern:
+
+```bash
+npx branchkit init --targets "src/pages/**/*.tsx"
+```
 
 **Note:** Each version file must default-export its component.
 
